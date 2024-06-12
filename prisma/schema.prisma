@@ -1,0 +1,204 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id                           String                         @id
+  name                         String
+  zone                         Zone                           @relation(fields: [zoneId], references: [id])
+  zoneId                       String
+  CupResults                   CupResult[]
+  Maps                         Map[]
+  ChallengeResults             ChallengeResult[]
+  TimeAttack                   TimeAttack[]
+  GlobalCupLeaderboard         GlobalCupLeaderboard[]
+  MonthlyCupLeaderboard        MonthlyCupLeaderboard[]
+  MapperLeaderboard            MapperLeaderboard[]
+  GlobalTimeAttackLeaderboard  GlobalTimeAttackLeaderboard[]
+  MonthlyTimeAttackLeaderboard MonthlyTimeAttackLeaderboard[]
+}
+
+model Cup {
+  id           Int         @id
+  name         String
+  participants Int
+  year         Int
+  month        Int
+  day          Int
+  version      Int
+  cupResults   CupResult[]
+}
+
+model Challenge {
+  id              Int               @id
+  name            String
+  participants    Int
+  year            Int
+  month           Int
+  day             Int
+  version         Int
+  challengeResult ChallengeResult[]
+}
+
+model Zone {
+  id        String   @id
+  name      String
+  flag      String
+  parentId  String?
+  parent    Zone?    @relation("ZoneParent", fields: [parentId], references: [id])
+  displayId String?
+  display   Zone?    @relation("ZoneDisplay", fields: [displayId], references: [id])
+  children  Zone[]   @relation("ZoneParent")
+  displays  Zone[]   @relation("ZoneDisplay")
+  players   Player[]
+}
+
+model CupResult {
+  id       Int    @id @default(autoincrement())
+  cup      Cup    @relation(fields: [cupId], references: [id])
+  player   Player @relation(fields: [playerId], references: [id])
+  position Int
+  points   Int
+  cupId    Int
+  playerId String
+}
+
+model ChallengeResult {
+  id          Int       @id @default(autoincrement())
+  player      Player    @relation(fields: [playerId], references: [id])
+  playerId    String
+  time        Int
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId Int
+}
+
+model Map {
+  id         String       @id
+  uid        String
+  author     Player       @relation(fields: [playerId], references: [id])
+  playerId   String
+  seasonUid  String
+  thumbnail  String
+  name       String
+  authorTime Int
+  goldTime   Int
+  silverTime Int
+  bronzeTime Int
+  exchangeId String?
+  style      String?
+  type       String?
+  year       Int
+  month      Int
+  day        Int
+  upvotes    Int
+  downvotes  Int
+  TimeAttack TimeAttack[]
+
+  @@unique([year, month, day])
+}
+
+model TimeAttack {
+  player   Player @relation(fields: [playerId], references: [id])
+  map      Map    @relation(fields: [mapId], references: [id])
+  position Int
+  time     Int
+  playerId String
+  mapId    String
+
+  @@id([playerId, mapId])
+}
+
+model GlobalCupLeaderboard {
+  playerId   String @id
+  version    Int
+  amount     Int
+  player     Player @relation(fields: [playerId], references: [id])
+  points     Int
+  first      Int
+  second     Int
+  third      Int
+  top8       Int
+  top16      Int
+  top32      Int
+  top64      Int
+  top128     Int
+  bestResult Int
+  average    Int
+}
+
+model MonthlyCupLeaderboard {
+  playerId   String @id
+  version    Int
+  amount     Int
+  player     Player @relation(fields: [playerId], references: [id])
+  points     Int
+  year       Int
+  month      Int
+  first      Int
+  second     Int
+  third      Int
+  top8       Int
+  top16      Int
+  top32      Int
+  top64      Int
+  top128     Int
+  bestResult Int
+  average    Float
+}
+
+model MapperLeaderboard {
+  playerId String @id
+  player   Player @relation(fields: [playerId], references: [id])
+  amount   Int
+}
+
+model GlobalTimeAttackLeaderboard {
+  playerId   String @id
+  player     Player @relation(fields: [playerId], references: [id])
+  amount     Int
+  points     Int
+  year       Int
+  month      Int
+  first      Int
+  second     Int
+  third      Int
+  top5       Int
+  top10      Int
+  top25      Int
+  top50      Int
+  top100     Int
+  top500     Int
+  bestResult Int
+  average    Float
+}
+
+model MonthlyTimeAttackLeaderboard {
+  playerId   String @id
+  player     Player @relation(fields: [playerId], references: [id])
+  year       Int
+  month      Int
+  amount     Int
+  points     Int
+  first      Int
+  second     Int
+  third      Int
+  top5       Int
+  top10      Int
+  top25      Int
+  top50      Int
+  top100     Int
+  top500     Int
+  bestResult Int
+  average    Float
+}
