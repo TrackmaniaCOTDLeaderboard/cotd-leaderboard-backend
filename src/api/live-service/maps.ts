@@ -114,13 +114,20 @@ const CHUNK_SIZE_LEADERBOARD = 100;
  * @returns 
  */
 export const getMapLeaderboard = async (mapUid: string, groupUid: string, amount: number) => {
+    let offset = 0;
     const data = [];
-    for (let offset = 0; offset < amount; offset += CHUNK_SIZE_LEADERBOARD) {
+    const totalChunks = Math.ceil(amount / CHUNK_SIZE_LEADERBOARD);
+    for (let chunk = 0; chunk < totalChunks; chunk++) {
+
         const token = await authentication.getAccessToken();
-        const response = await get(`https://live-services.trackmania.nadeo.live/api/token/leaderboard/group/${groupUid}/map/${mapUid}/top?onlyWorld=true&length=${CHUNK_SIZE_LEADERBOARD}&offset=${offset}`, token)
+        const remaining = length - data.length;
+        const chunkSize = Math.min(CHUNK_SIZE_LEADERBOARD, remaining);
+
+        const response = await get(`https://live-services.trackmania.nadeo.live/api/token/leaderboard/group/${groupUid}/map/${mapUid}/top?onlyWorld=true&length=${chunkSize}&offset=${offset}`, token)
         const result = MapLeaderboard.parse(response.data);
         const tops = result.tops[0];
         data.push(...tops.top);
+        offset += CHUNK_SIZE_LEADERBOARD;
         await wait(1);
     }
     return data.flat();

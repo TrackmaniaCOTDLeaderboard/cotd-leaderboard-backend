@@ -4,7 +4,7 @@ import { updatePlayers } from "./update-players";
 
 
 export const updateTimeAttack = async (mapUid: string, mapId: string, seasonUid: string) => {
-    const timeAttackResults = await getMapLeaderboard(mapUid, seasonUid, 1000);
+    const timeAttackResults = await getMapLeaderboard(mapUid, seasonUid, 200);
     const ids = timeAttackResults.map(result => result.accountId);
 
     await updatePlayers(ids);

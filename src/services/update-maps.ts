@@ -1,4 +1,4 @@
-import { getMapLeaderboard, getMapsInfo, getTrackOfTheDays } from "../api/live-service/maps";
+import { getMapsInfo, getTrackOfTheDays } from "../api/live-service/maps";
 import { database } from "../database";
 import { wait } from "../util";
 import { updatePlayers } from "./update-players";

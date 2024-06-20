@@ -27,27 +27,30 @@ model Player {
   MapperLeaderboard            MapperLeaderboard[]
   GlobalTimeAttackLeaderboard  GlobalTimeAttackLeaderboard[]
   MonthlyTimeAttackLeaderboard MonthlyTimeAttackLeaderboard[]
+  GlobalChallengeLeaderboard   GlobalChallengeLeaderboard[]
+  MonthlyChallengeLeaderboard  MonthlyChallengeLeaderboard[]
 }
 
 model Cup {
-  id           Int         @id
-  name         String
-  participants Int
-  year         Int
-  month        Int
-  day          Int
-  version      Int
-  cupResults   CupResult[]
+  id            Int         @id
+  name          String
+  participants  Int
+  year          Int
+  month         Int
+  day           Int
+  version       Int
+  leaderboardId Int
+  cupResults    CupResult[]
 }
 
 model Challenge {
   id              Int               @id
   name            String
-  participants    Int
   year            Int
   month           Int
   day             Int
   version         Int
+  leaderboardId   Int
   challengeResult ChallengeResult[]
 }
 
@@ -65,22 +68,25 @@ model Zone {
 }
 
 model CupResult {
-  id       Int    @id @default(autoincrement())
   cup      Cup    @relation(fields: [cupId], references: [id])
   player   Player @relation(fields: [playerId], references: [id])
   position Int
   points   Int
   cupId    Int
   playerId String
+
+  @@id([cupId, playerId])
 }
 
 model ChallengeResult {
-  id          Int       @id @default(autoincrement())
   player      Player    @relation(fields: [playerId], references: [id])
   playerId    String
+  position    Int
   time        Int
   challenge   Challenge @relation(fields: [challengeId], references: [id])
   challengeId Int
+
+  @@id([playerId, challengeId])
 }
 
 model Map {
@@ -135,6 +141,7 @@ model GlobalCupLeaderboard {
   top128     Int
   bestResult Int
   average    Int
+  position   Int
 }
 
 model MonthlyCupLeaderboard {
@@ -155,12 +162,14 @@ model MonthlyCupLeaderboard {
   top128     Int
   bestResult Int
   average    Float
+  position   Int
 }
 
 model MapperLeaderboard {
   playerId String @id
   player   Player @relation(fields: [playerId], references: [id])
   amount   Int
+  position Int
 }
 
 model GlobalTimeAttackLeaderboard {
@@ -168,8 +177,6 @@ model GlobalTimeAttackLeaderboard {
   player     Player @relation(fields: [playerId], references: [id])
   amount     Int
   points     Int
-  year       Int
-  month      Int
   first      Int
   second     Int
   third      Int
@@ -181,6 +188,7 @@ model GlobalTimeAttackLeaderboard {
   top500     Int
   bestResult Int
   average    Float
+  position   Int
 }
 
 model MonthlyTimeAttackLeaderboard {
@@ -201,4 +209,43 @@ model MonthlyTimeAttackLeaderboard {
   top500     Int
   bestResult Int
   average    Float
+  position   Int
+}
+
+model GlobalChallengeLeaderboard {
+  playerId   String @id
+  player     Player @relation(fields: [playerId], references: [id])
+  amount     Int
+  points     Int
+  first      Int
+  second     Int
+  third      Int
+  top8       Int
+  top16      Int
+  top32      Int
+  top64      Int
+  top128     Int
+  bestResult Int
+  average    Float
+  position   Int
+}
+
+model MonthlyChallengeLeaderboard {
+  playerId   String @id
+  player     Player @relation(fields: [playerId], references: [id])
+  year       Int
+  month      Int
+  amount     Int
+  points     Int
+  first      Int
+  second     Int
+  third      Int
+  top8       Int
+  top16      Int
+  top32      Int
+  top64      Int
+  top128     Int
+  bestResult Int
+  average    Float
+  position   Int
 }

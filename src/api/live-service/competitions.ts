@@ -1,5 +1,6 @@
 import { get } from "../get-request";
 import authentication from "./authentication";
+import { wait } from "../../util";
 import { z } from "zod";
 
 const CompetitionSchema = z.object({
@@ -11,11 +12,15 @@ const CompetitionSchema = z.object({
     leaderboardId: z.number()
 });
 
+export type Competition = z.infer<typeof CompetitionSchema>;
+
 const CompetitionResultSchema = z.object({
     participant: z.string(),
     rank: z.number(),
     score: z.number()
 });
+
+const CHUNK_SIZE_COMPETITION = 100;
 
 /**
  * 
@@ -23,20 +28,25 @@ const CompetitionResultSchema = z.object({
  * @param offset 
  * @returns
  */
-export const getCompetitions = async (length: number, offset: number = 0) => {
-    if (length < 0 || length > 100) {
-        throw new Error(`IllegalArgument: length must be between 0 and 100 but was ${length}`);
+export const getCompetitions = async (length: number) => {
+    if (length < 0) {
+        throw new Error("Length must be greater than 0.")
     }
 
-    if (offset < 0) {
-        throw new Error(`IllegalArgument: offset must be bigger than 0 but was ${offset}`);
+    const data = [];
+    for (let offset = 0; offset < length; offset += CHUNK_SIZE_COMPETITION) {
+        const token = await authentication.getAccessToken();
+        const response = await get(`https://meet.trackmania.nadeo.club/api/competitions?length=${CHUNK_SIZE_COMPETITION}&offset=${offset}`, token);
+        const result = z.array(CompetitionSchema).parse(response.data);
+        if (result.length === 0) break;
+        data.push(...result);
+        await wait(1);
     }
-
-    const token = await authentication.getAccessToken();
-    const response = await get(`https://meet.trackmania.nadeo.club/api/competitions?length=${length}&offset=${offset}`, token);
-    return z.array(CompetitionSchema).parse(response.data);
+    return data;
 }
 
+
+const CHUNK_SIZE_LEADERBOARD = 255;
 /**
  * 
  * @param id CompetitionId
@@ -44,15 +54,24 @@ export const getCompetitions = async (length: number, offset: number = 0) => {
  * @returns 
  */
 export const getCompetitionLeaderboard = async (id: number, length: number, offset: number = 0) => {
-    if (length < 0 || length > 255) {
-        throw new Error(`IllegalArgument: length must be between 0 and 255 but was ${length}`);
+    if (length < 0) {
+        throw new Error("Length must be greater than 0.")
     }
 
-    if (offset < 0) {
-        throw new Error(`IllegalArgument: offset must be bigger than 0 but was ${offset}`);
-    }
+    const totalChunks = Math.ceil(length / CHUNK_SIZE_LEADERBOARD);
 
-    const token = await authentication.getAccessToken();
-    const response = await get(`https://meet.trackmania.nadeo.club/api/competitions/${id}/leaderboard?length=${length}&offset=${offset}`, token);
-    return z.array(CompetitionResultSchema).parse(response.data);
+    const data = [];
+    for (let chunk = 0; chunk < totalChunks; chunk++) {
+        const token = await authentication.getAccessToken();
+
+        const remaining = length - data.length;
+        const chunkSize = Math.min(CHUNK_SIZE_COMPETITION, remaining);
+        const response = await get(`https://meet.trackmania.nadeo.club/api/competitions/${id}/leaderboard?length=${chunkSize}&offset=${offset}`, token);
+        const result = z.array(CompetitionResultSchema).parse(response.data);
+        data.push(...result);
+
+        offset += CHUNK_SIZE_LEADERBOARD;
+        await wait(1);
+    }
+    return data;
 }
