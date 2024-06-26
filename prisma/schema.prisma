@@ -115,14 +115,15 @@ model Map {
 }
 
 model TimeAttack {
-  player   Player @relation(fields: [playerId], references: [id])
-  map      Map    @relation(fields: [mapId], references: [id])
+  player   Player  @relation(fields: [playerId], references: [id])
+  map      Map     @relation(fields: [mapId], references: [id])
+  locked   Boolean
   position Int
   time     Int
   playerId String
   mapId    String
 
-  @@id([playerId, mapId])
+  @@id([playerId, mapId, locked])
 }
 
 model GlobalCupLeaderboard {

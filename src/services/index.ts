@@ -1,0 +1,1 @@
+export { Service, serviceManager } from "./service-manager";

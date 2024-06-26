@@ -46,6 +46,6 @@ def process_zip(zip_path, output_folder):
 
 
 # Example usage
-zip_path = "./Maniaplanet_Flags.zip"
-output_folder = "./assets"
+zip_path = "../Maniaplanet_Flags.zip"
+output_folder = "../assets"
 process_zip(zip_path, output_folder)

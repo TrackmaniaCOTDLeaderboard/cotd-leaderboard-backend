@@ -13,14 +13,12 @@ export const getFlag: RequestHandler = async (request, response, next) => {
     });
 
     if (zone === null) {
-        next(createHttpError(404, `Zone with the id ${zoneId} doesn't exist.`));
-        return;
+        return next(createHttpError(404, `Zone with the id ${zoneId} doesn't exist.`));
     }
 
     const filePath = path.join(__dirname, `../../assets/${zone.flag}`);
     if (!fs.existsSync(filePath)) {
-        next(createHttpError(404, `Flag ${filePath} doesn't exist.`));
-        return;
+        return next(createHttpError(404, `Flag ${filePath} doesn't exist.`));
     }
 
     response.status(200).sendFile(filePath);

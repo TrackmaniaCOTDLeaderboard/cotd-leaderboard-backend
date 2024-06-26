@@ -1,7 +1,6 @@
+import { z } from "zod";
 import { get } from "../get-request";
 import authentication from "./authentication";
-import { wait } from "../../util";
-import { z } from "zod";
 
 const CompetitionSchema = z.object({
     id: z.number(),
@@ -20,58 +19,63 @@ const CompetitionResultSchema = z.object({
     score: z.number()
 });
 
-const CHUNK_SIZE_COMPETITION = 100;
+export type CompetitionResult = z.infer<typeof CompetitionResultSchema>;
 
-/**
+export const CHUNK_SIZE_COMPETITION = 100;
+
+/** 
+ * Gets a list of competitions. The response includes Super Royal and COTD instances as well as community-made competitions.
  * 
- * @param length max 100 
- * @param offset 
- * @returns
+ * For more information, see the [OpenPlanet Documentation](https://webservices.openplanet.dev/meet/competitions/competitions).
+ * 
+ * @param length The number of competitions to retrieve. *Max*: {@link CHUNK_SIZE_COMPETITION}, *Default*: `10`
+ * @param offset The number of competitions to skip. *Default*: `0`
+ * @returns List of competitions.
  */
-export const getCompetitions = async (length: number) => {
-    if (length < 0) {
-        throw new Error("Length must be greater than 0.")
+export const getCompetitions = async (length?: number, offset?: number) => {
+    if (length !== undefined && (length < 1 || length > CHUNK_SIZE_COMPETITION)) {
+        throw new Error(`IllegalArgument: length must be between 1 and ${CHUNK_SIZE_COMPETITION} but was ${length}`);
     }
 
-    const data = [];
-    for (let offset = 0; offset < length; offset += CHUNK_SIZE_COMPETITION) {
-        const token = await authentication.getAccessToken();
-        const response = await get(`https://meet.trackmania.nadeo.club/api/competitions?length=${CHUNK_SIZE_COMPETITION}&offset=${offset}`, token);
-        const result = z.array(CompetitionSchema).parse(response.data);
-        if (result.length === 0) break;
-        data.push(...result);
-        await wait(1);
+    if (offset !== undefined && offset < 0) {
+        throw new Error("Offset must be greater than 0.")
     }
-    return data;
+
+    const token = await authentication.getAccessToken();
+    const response = await get(`https://meet.trackmania.nadeo.club/api/competitions`, {
+        token,
+        params: { length, offset }
+    });
+    return z.array(CompetitionSchema).parse(response.data);
 }
 
 
-const CHUNK_SIZE_LEADERBOARD = 255;
+export const CHUNK_SIZE_COMPETITION_RESULTS = 255;
+
 /**
+ * Gets leaderboard for a competition ID. There are two different competition IDs which are both supported by this endpoint - the primary id is always numerical, while the `liveId` is a string typically starting with `"LID-COMP-"`.
+ * If a competition hasn't started yet, all `score` values will be `0`, but there will still be `rank` values assigned to each player.
  * 
- * @param id CompetitionId
- * @param length max 255
- * @returns 
+ * For more information, see the [OpenPlanet Documentation](https://webservices.openplanet.dev/meet/competitions/leaderboard).
+ * 
+ * @param competitonId A valid competition ID.
+ * @param length The number of participants to retrieve. *Max*: {@link CHUNK_SIZE_COMPETITION_RESULTS}, *Default*: `10`
+ * @param offset The number of participants to skip. *Default*: `0`
+ * @returns Leaderboard entries of competition with the given id.
  */
-export const getCompetitionLeaderboard = async (id: number, length: number, offset: number = 0) => {
-    if (length < 0) {
-        throw new Error("Length must be greater than 0.")
+export const getCompetitionResults = async (competitonId: number, length?: number, offset?: number) => {
+    if (length !== undefined && (length < 1 || length > CHUNK_SIZE_COMPETITION_RESULTS)) {
+        throw new Error(`IllegalArgument: length must be between 1 and ${CHUNK_SIZE_COMPETITION_RESULTS} but was ${length}`);
     }
 
-    const totalChunks = Math.ceil(length / CHUNK_SIZE_LEADERBOARD);
-
-    const data = [];
-    for (let chunk = 0; chunk < totalChunks; chunk++) {
-        const token = await authentication.getAccessToken();
-
-        const remaining = length - data.length;
-        const chunkSize = Math.min(CHUNK_SIZE_COMPETITION, remaining);
-        const response = await get(`https://meet.trackmania.nadeo.club/api/competitions/${id}/leaderboard?length=${chunkSize}&offset=${offset}`, token);
-        const result = z.array(CompetitionResultSchema).parse(response.data);
-        data.push(...result);
-
-        offset += CHUNK_SIZE_LEADERBOARD;
-        await wait(1);
+    if (offset !== undefined && offset < 0) {
+        throw new Error("Offset must be greater than 0.")
     }
-    return data;
+
+    const token = await authentication.getAccessToken();
+    const response = await get(`https://meet.trackmania.nadeo.club/api/competitions/${competitonId}/leaderboard`, {
+        token,
+        params: { length, offset }
+    });
+    return z.array(CompetitionResultSchema).parse(response.data);
 }

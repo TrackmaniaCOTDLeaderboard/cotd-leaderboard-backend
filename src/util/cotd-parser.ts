@@ -1,6 +1,3 @@
-import { Competition } from "../api/live-service/competitions";
-import { Challenge } from "../api/live-service/challenges";
-
 const PATTERN_COMPETITIONS = [
     // Cup of the Day 2020-11-02
     // Cup of the Day 2021-09-17 #1
@@ -9,19 +6,23 @@ const PATTERN_COMPETITIONS = [
     /^COTD (\d{4})-(\d{2})-(\d{2}) #(\d+)$/
 ];
 
-export const parseCompetition = (competition: Competition) => {
-
-    const name = competition.name;
+/**
+ * Get meta data from the name of a competition. This function extracts the `year`, `month`, `day` and `rerun` version of the competition.
+ * @param competitionName Name of the competition.
+ * @returns `year`, `month`, `day` and `rerun` version of the competition. Null if the challenge name has an invalid/unknown format.
+ */
+export const parseCompetition = (competitionName: string) => {
     for (const pattern of PATTERN_COMPETITIONS) {
-        const match = name.match(pattern);
-        if (match) {
-            const [_, yearStr, monthStr, dayStr, divisionStr] = match;
-            const year = parseInt(yearStr, 10);
-            const month = parseInt(monthStr, 10);
-            const day = parseInt(dayStr, 10);
-            const division = divisionStr ? parseInt(divisionStr, 10) : 1;
-            return { year, month, day, division };
-        }
+        const match = competitionName.match(pattern);
+
+        if (match === null) continue;
+
+        const [_, yearStr, monthStr, dayStr, versionStr] = match;
+        const year = parseInt(yearStr, 10);
+        const month = parseInt(monthStr, 10);
+        const day = parseInt(dayStr, 10);
+        const version = versionStr ? parseInt(versionStr, 10) : 1;
+        return { year, month, day, version };
     }
 
     // If no match found, return null
@@ -37,19 +38,23 @@ const PATTERNS_CHALLENGE = [
     /^COTD (\d{4})-(\d{2})-(\d{2}) #(\d+) - Challenge$/
 ];
 
-export const parseChallenge = (challenge: Challenge) => {
+/**
+ * Get meta data from the name of a challenge. This function extracts the `year`, `month`, `day` and `rerun` version of the challenge.
+ * @param challengeName Name of the challenge
+ * @returns `year`, `month`, `day` and `rerun` version of the challenge. Null if the challenge name has an invalid/unknown format.
+ */
+export const parseChallenge = (challengeName: string) => {
 
-    const name = challenge.name;
     for (const pattern of PATTERNS_CHALLENGE) {
-        const match = name.match(pattern);
-        if (match) {
-            const [_, yearStr, monthStr, dayStr, divisionStr] = match;
-            const year = parseInt(yearStr, 10);
-            const month = parseInt(monthStr, 10);
-            const day = parseInt(dayStr, 10);
-            const division = divisionStr ? parseInt(divisionStr, 10) : 1;
-            return { year, month, day, division };
-        }
+        const match = challengeName.match(pattern);
+        if (match === null) continue;
+
+        const [_, yearStr, monthStr, dayStr, versionStr] = match;
+        const year = parseInt(yearStr, 10);
+        const month = parseInt(monthStr, 10);
+        const day = parseInt(dayStr, 10);
+        const version = versionStr ? parseInt(versionStr, 10) : 1;
+        return { year, month, day, version };
     }
 
     // If no match found, return null

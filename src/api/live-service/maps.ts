@@ -1,8 +1,6 @@
 import { z } from "zod";
-import authentication from "./authentication";
 import { get } from "../get-request";
-import { chunkArray } from "../../util/chunks";
-import { wait } from "../../util";
+import authentication from "./authentication";
 
 const DaySchema = z.object({
     campaignId: z.number(),
@@ -18,6 +16,8 @@ const MonthSchema = z.object({
     lastDay: z.number(),
     days: z.array(DaySchema)
 });
+
+export type Month = z.infer<typeof MonthSchema>;
 
 const MonthListSchema = z.object({
     monthList: z.array(MonthSchema)
@@ -37,6 +37,8 @@ const MapSchema = z.object({
     mapType: z.string()
 });
 
+export type Map = z.infer<typeof MapSchema>;
+
 const MapListSchema = z.object({
     mapList: z.array(MapSchema)
 });
@@ -55,80 +57,98 @@ const MapZoneLeaderboard = z.object({
     top: z.array(MapLeaderboardEntry)
 })
 
+export type TimeAttackResult = z.infer<typeof MapLeaderboardEntry>;
+
 const MapLeaderboard = z.object({
     groupUid: z.string(),
     mapUid: z.string(),
     tops: z.array(MapZoneLeaderboard)
 })
 
+export const CHUNK_SIZE_MONTHS = 12;
+
 /**
+ * Gets Tracks of the Day by month. There is also the possibility to get the royal maps via this endpoint but its not implemented in this project.
+ * For more information, see the [OpenPlanet Documentation](https://webservices.openplanet.dev/live/campaigns/totds).
  * 
- * @param length max idk
- * @param offset 
- * @returns 
+ * @param length The number of months to retrieve. *Max*: {@link CHUNK_SIZE_MONTHS},*Default*: `0`. Note that the given max is not officially documented! 
+ * @param offset The number of months to skip (looking backwards from the current month. Current month is offset `0`. Month before offset `1`, etc.). *Default*: `0`;
+ * @returns List of months with all their Track of the Days
  */
-export const getTrackOfTheDays = async (length: number, offset: number) => {
-    if (length < 0 || length > 100) {
-        throw new Error(`IllegalArgument: length must be between 0 and 100 but was ${length}`);
+export const getTracksOfAMonths = async (length?: number, offset?: number) => {
+    if (length !== undefined && (length < 1 || length > CHUNK_SIZE_MONTHS)) {
+        throw new Error(`IllegalArgument: length must be between 0 and ${CHUNK_SIZE_MONTHS} but was ${length}`);
     }
 
-    if (offset < 0) {
+    if (offset !== undefined && offset < 0) {
         throw new Error(`IllegalArgument: offset must be bigger than 0 but was ${offset}`);
     }
 
     const token = await authentication.getAccessToken();
-    const response = await get(`https://live-services.trackmania.nadeo.live/api/token/campaign/month?offset=${offset}&length=${length}`, token);
-    return MonthListSchema.parse(response.data);
+    const response = await get(`https://live-services.trackmania.nadeo.live/api/token/campaign/month`, {
+        token,
+        params: { offset, length }
+    });
+    return MonthListSchema.parse(response.data).monthList;
 }
 
-const CHUNK_SIZE_MAPS = 100;
+export const CHUNK_SIZE_MAPS = 100;
 
-
-
+/**
+ * Gets information about multiple maps via their UIDs. Invalid UIDs will be ignored in the result without any visible errors. 
+ * If a `mapUid` is invalid, that map will not be returned in the response.
+ * 
+ * For more information, see the [OpenPlanet Documentation](https://webservices.openplanet.dev/live/maps/info-multiple).
+ * 
+ * @param mapUids A list of map UIDs. *Max length*: {@link CHUNK_SIZE_MAPS}
+ * @returns List of informations of the requested maps.
+ */
 export const getMapsInfo = async (mapUids: string[]) => {
-    const chunks = chunkArray(mapUids, CHUNK_SIZE_MAPS);
-    const mapInfoPromises = chunks.map(getMapsInfoChunk);
-    const maps = await Promise.all(mapInfoPromises);
-    return maps.flat();
-}
+    if (mapUids.length === 0) return [];
 
-const getMapsInfoChunk = async (mapUids: string[]) => {
     if (mapUids.length > CHUNK_SIZE_MAPS) {
         throw new Error(`Illegal Argument: Chunk max size is ${CHUNK_SIZE_MAPS} but chunk size was ${mapUids.length}.`);
     }
 
-    const query = mapUids.join(",");
+    const mapUidList = mapUids.join(",");
     const token = await authentication.getAccessToken();
-    const response = await get(`https://live-services.trackmania.nadeo.live/api/token/map/get-multiple?mapUidList=${query}`, token);
+    const response = await get(`https://live-services.trackmania.nadeo.live/api/token/map/get-multiple`, {
+        token,
+        params: { mapUidList }
+    });
     return MapListSchema.parse(response.data).mapList;
 }
 
 
-const CHUNK_SIZE_LEADERBOARD = 100;
+export const CHUNK_SIZE_MAP_LEADERBOARD = 100;
 
 /**
- * You can only access the first 10.000 entries.
- * @param mapUid 
- * @param groupUid "Personal_Best" for global leaderboard, seasonUid for locked leaderboard
- * @param amount  
- * @returns 
+ * Gets records from a map's leaderboard.
+ * 
+ * For more information, see the [OpenPlanet Documentation](https://webservices.openplanet.dev/live/leaderboards/top).
+ * 
+ * @param mapUid The UID of the map.
+ * @param groupUid The ID of the group/season. `Personal_Best` for global leaderboard, `seasonUid` for locked leaderboard
+ * @param length The number of records to retrieve. *Max*: {@link CHUNK_SIZE_MAP_LEADERBOARD}, Default: `5`
+ * @param offset The number of records to skip. *Default*: 0
+ * @returns Map leaderboard of the request map. 
  */
-export const getMapLeaderboard = async (mapUid: string, groupUid: string, amount: number) => {
-    let offset = 0;
-    const data = [];
-    const totalChunks = Math.ceil(amount / CHUNK_SIZE_LEADERBOARD);
-    for (let chunk = 0; chunk < totalChunks; chunk++) {
-
-        const token = await authentication.getAccessToken();
-        const remaining = length - data.length;
-        const chunkSize = Math.min(CHUNK_SIZE_LEADERBOARD, remaining);
-
-        const response = await get(`https://live-services.trackmania.nadeo.live/api/token/leaderboard/group/${groupUid}/map/${mapUid}/top?onlyWorld=true&length=${chunkSize}&offset=${offset}`, token)
-        const result = MapLeaderboard.parse(response.data);
-        const tops = result.tops[0];
-        data.push(...tops.top);
-        offset += CHUNK_SIZE_LEADERBOARD;
-        await wait(1);
+export const getTimeAttackResults = async (mapUid: string, groupUid: string, length?: number, offset?: number) => {
+    if (length !== undefined && (length < 1 || length > CHUNK_SIZE_MAP_LEADERBOARD)) {
+        throw new Error(`IllegalArgument: length must be between 1 and ${CHUNK_SIZE_MAP_LEADERBOARD} but was ${length}`);
     }
-    return data.flat();
+
+    if (offset !== undefined && offset < 0) {
+        throw new Error(`IllegalArgument: offset must be bigger than 0 but was ${offset}`);
+    }
+
+    // onlyWorld is required to retrieve more than the first five records. Without it, length and offset will have no effect.
+    const onlyWorld = true;
+    const token = await authentication.getAccessToken();
+    const response = await get(`https://live-services.trackmania.nadeo.live/api/token/leaderboard/group/${groupUid}/map/${mapUid}/top`, {
+        token,
+        params: { onlyWorld, length, offset }
+    })
+    const result = MapLeaderboard.parse(response.data);
+    return result.tops[0].top;
 }

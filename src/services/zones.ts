@@ -1,4 +1,4 @@
-import { getAllZones } from "../api/core-service/zones";
+import { NadeoCoreService } from "../api";
 import { database } from "../database";
 import { assertIsDefined } from "../util/assert-defined";
 
@@ -8,6 +8,11 @@ type TreeNode = {
     parent?: TreeNode;
 }
 
+/**
+ * Determine the path to the icon of a zone in the assets directory. For more details check out the `extract_flags.py` Python script.
+ * @param file File path returned from the nadeo zones.
+ * @returns Path to the icon in the assets directory.
+ */
 const getImagePath = (file: string) => {
     const cleanedPath = file.replace("file://", "");
     const parts = cleanedPath.split('/');
@@ -20,6 +25,12 @@ const getImagePath = (file: string) => {
     return `${fileName}.${extension}`;
 }
 
+/**
+ * Calculates a `displayZone` for a given zone. Display zone refers to the country flag that is shown in the leaderboard.
+ * - `Dresden` -> `Saxony` -> `Germany` -> `Europe` -> `World` | Display Zone is `Germany`
+ * - `Europe` -> `World` | Display Zone is `Europe`
+ * - `World` | Display Zone is `World`
+ */
 const getDisplayZone = (zone: TreeNode, nodeMap: Record<string, TreeNode>) => {
     const parents: string[] = [];
     let node: TreeNode | undefined = nodeMap[zone.id]
@@ -39,8 +50,14 @@ const getDisplayZone = (zone: TreeNode, nodeMap: Record<string, TreeNode>) => {
     return parents[parents.length - 3];
 }
 
+/**
+ * Fetches the zones from the nadeo core service and upserts them into the database.
+ * While doing that this service will calculate a "display zone" for every zone. This zone will be used to display the country flag of a player.
+ * For more details check {@link getDisplayZone}
+ */
 export const updateZones = async () => {
-    const zones = await getAllZones();
+
+    const zones = await NadeoCoreService.getAllZones();
 
     const nodeMap: Record<string, TreeNode> = {};
 

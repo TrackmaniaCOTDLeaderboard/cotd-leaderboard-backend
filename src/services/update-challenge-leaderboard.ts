@@ -127,11 +127,7 @@ export const updateMonthlyChallengeLeaderboard = async (year: number, month: num
                     },
                 },
                 include: {
-                    challenge: {
-                        select: {
-                            version: true
-                        }
-                    }
+                    challenge: { select: { version: true } }
                 }
             }
         }
@@ -165,11 +161,7 @@ export const updateGlobalChallengeLeaderboard = async () => {
         include: {
             ChallengeResults: {
                 include: {
-                    challenge: {
-                        select: {
-                            version: true
-                        }
-                    }
+                    challenge: { select: { version: true } }
                 }
             }
         }

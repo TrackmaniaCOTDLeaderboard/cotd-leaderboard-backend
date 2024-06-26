@@ -1,8 +1,9 @@
-import { getMapsInfo, getTrackOfTheDays } from "../api/live-service/maps";
+import { record } from "zod";
+import { NadeoLiveService } from "../api";
 import { database } from "../database";
-import { wait } from "../util";
-import { updatePlayers } from "./update-players";
-import { updateTimeAttack } from "./update-time-attack";
+import { calculateChunksDetails, chunkArray, wait } from "../util";
+import { updatePlayers } from "./players";
+import { updateTimeAttack } from "./time-attack";
 
 type TrackOfTheDayDetails = {
     year: number;
@@ -11,13 +12,36 @@ type TrackOfTheDayDetails = {
     seasonUid: string;
 }
 
-export const updateMaps = async (offset: number) => {
-    const trackOfTheDays = await getTrackOfTheDays(1, offset);
-    await wait(2);
-    const mapUids: string[] = [];
+const getTracksOfMonths = async (length: number, offset: number) => {
+    const monthCunks = calculateChunksDetails(NadeoLiveService.CHUNK_SIZE_MONTHS, length, offset);
+    const tracksOfMonths: NadeoLiveService.Month[] = [];
+    for (const monthCunk of monthCunks) {
+        const result = await NadeoLiveService.getTracksOfAMonths(monthCunk.length, monthCunk.offset);
+        tracksOfMonths.push(...result);
+        await wait(0.5)
+    }
+    return tracksOfMonths;
+}
 
+const getMapsInfo = async (mapUids: string[]) => {
+    const mapUidChunks = chunkArray(mapUids, NadeoLiveService.CHUNK_SIZE_MAPS);
+    const tracks: NadeoLiveService.Map[] = []
+    for (const mapUidChunk of mapUidChunks) {
+        const result = await NadeoLiveService.getMapsInfo(mapUidChunk);
+        tracks.push(...result);
+    }
+    return tracks;
+}
+
+
+export const updateMaps = async (length: number, offset: number) => {
+    const tracksOfMonths = await getTracksOfMonths(length, offset);
+
+    const mapUids: string[] = [];
+    const sortedDays: Record<string, string> = {}
     const mapping: Record<string, TrackOfTheDayDetails> = {};
-    trackOfTheDays.monthList.forEach(month => {
+
+    tracksOfMonths.forEach(month => {
         month.days.forEach(day => {
             mapUids.push(day.mapUid);
             mapping[day.mapUid] = {
@@ -28,13 +52,13 @@ export const updateMaps = async (offset: number) => {
             }
         });
     });
+
     const maps = await getMapsInfo(mapUids);
-    await wait(2);
 
     const accountIds = maps.map(map => map.author);
     await updatePlayers(accountIds);
 
-    await wait(2);
+    await wait(1);
 
     for (const map of maps) {
         const details = mapping[map.uid];
@@ -72,8 +96,6 @@ export const updateMaps = async (offset: number) => {
         });
 
         await updateTimeAttack(map.uid, map.mapId, details.seasonUid);
-        console.log("DOne Map");
     };
-    console.log("DOne");
 
 }

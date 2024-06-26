@@ -13,7 +13,11 @@ export class TokenManager {
     private refreshToken?: string;
     private expires?: number;
 
-    constructor(private readonly authenticationUrl: string, private readonly refreshUrl: string, private readonly audience: string) { }
+    constructor(
+        private readonly authenticationUrl: string,
+        private readonly refreshUrl: string,
+        private readonly audience: string
+    ) { }
 
     public async initialize() {
         const response = await getTokens(this.authenticationUrl, this.audience);
@@ -52,7 +56,7 @@ export class TokenManager {
     private updateTokens(response: AxiosResponse<any, any>) {
         const { accessToken, refreshToken, exp, rat } = validateResponse(response);
 
-        this.expires = exp * 1000;
+        this.expires = (exp - 10) * 1000;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
 
@@ -65,7 +69,6 @@ export class TokenManager {
         }
         return this.refreshToken;
     }
-
 
 }
 

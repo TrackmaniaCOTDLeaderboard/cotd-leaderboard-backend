@@ -5,23 +5,19 @@ import createHttpError from "http-errors";
 export const getTotdsByYearAndMonth: RequestHandler = async (request, response, next) => {
     const { year, month } = request.params;
 
-
     if (year === undefined || month === undefined) {
-        next(createHttpError(400, "Please provide a 'year' and a 'month' parameter."));
-        return;
+        return next(createHttpError(400, "Please provide a 'year' and a 'month' parameter."));
     }
 
     const yearAsInt = parseInt(year);
     const monthAsInt = parseInt(month);
 
     if (Number.isNaN(yearAsInt)) {
-        next(createHttpError(400, `"${year}" is not a valid year.`));
-        return;
+        return next(createHttpError(400, `"${year}" is not a valid year.`));
     }
 
     if (Number.isNaN(monthAsInt)) {
-        next(createHttpError(400, `"${month}" is not a valid month.`));
-        return;
+        return next(createHttpError(400, `"${month}" is not a valid month.`));
     }
 
     const result = await database.map.findMany({

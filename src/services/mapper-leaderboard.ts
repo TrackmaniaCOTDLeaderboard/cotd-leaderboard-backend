@@ -54,6 +54,4 @@ export const updateMapperLeaderboard = async () => {
             data: mapperLeaderboard
         })
     ])
-
-
 }

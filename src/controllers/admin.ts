@@ -1,36 +1,29 @@
-import { RequestHandler, response } from "express";
-import { getAllZones } from "../api/core-service/zones";
+import { RequestHandler } from "express";
 import { database } from "../database";
+import { serviceManager } from "../services";
 
-export const refreshCupOfTheDay: RequestHandler = (request, response, next) => {
-    response.status(200).json({ hallo: "hallo" })
-}
+export const startService: RequestHandler = (request, response, next) => {
 
-export const refreshTracksOfMonth: RequestHandler = async (request, response, next) => {
-
-}
-
-export const refreshZones: RequestHandler = async () => {
-    await getAllZones();
-    response.status(200).json({ message: "Successfully updated Zones." })
 }
 
 const firstCotD = new Date('2020-11-01');
-
-
 
 export const getCotDStatus: RequestHandler = async (request, response) => {
     const today = new Date();
     const cups = await database.cup.findMany();
 
+    const key = (year: number, month: number, day: number, version: number) => `${year}-${month}-${day} #${version}`
+
     const record: Record<string, boolean> = {};
-    const dateSet = new Set(cups.map(cup => `${cup.year}-${cup.month}-${cup.day}`));
+    const dateSet = new Set(cups.map(cup => key(cup.year, cup.month, cup.day, cup.version)));
 
     for (let d = new Date(firstCotD); d <= today; d.setDate(d.getDate() + 1)) {
-        const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-        record[key] = dateSet.has(key);
-    }
+        for (let version = 1; version <= 3; version++) {
+            const cup = key(d.getFullYear(), d.getMonth() + 1, d.getDate(), version);
+            record[cup] = dateSet.has(cup);
+        }
 
+    }
     response.status(200).json(record);
 
 }
@@ -52,28 +45,14 @@ export const getTotDStatus: RequestHandler = async (request, response) => {
     response.status(200).json(record);
 }
 
-export const test: RequestHandler = async (request, response) => {
-    const stats = await database.player.findUnique({
-        where: {
-            id: "53533000-79f5-4ac3-9831-46d107b55e9f"
-        },
-        include: {
-            CupResults: {
-                include: {
-                    cup: {
-                        select: {
-                            month: true,
-                            year: true,
-                            day: true,
-                            version: true
-                        }
-                    },
-                }
-            },
-            zone: true,
-            Maps: true
-        }
-    })
+export const getStatus: RequestHandler = async (request, response) => {
+    const states = serviceManager.getStatus();
+    const errors = serviceManager.getErrors();
+    response.status(200).json({ states, errors });
+}
 
-    response.status(200).json(stats);
+export const clearErrors: RequestHandler = async (request, response) => {
+    const size = serviceManager.getErrors().length;
+    serviceManager.clearErrors();
+    response.status(200).json({ message: "Success", amount: size });
 }

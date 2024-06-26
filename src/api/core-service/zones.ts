@@ -1,7 +1,6 @@
-import { get } from "../get-request";
 import { z } from "zod";
+import { get } from "../get-request";
 import authentication from "./authentication";
-import { chunkArray } from "../../util";
 
 const ZoneSchema = z.object({
     parentId: z.string().nullable(),
@@ -15,9 +14,14 @@ const AccountZoneSchema = z.object({
     accountId: z.string()
 });
 
+export type AccountZone = z.infer<typeof AccountZoneSchema>;
+
 
 /**
- * Get a list of all the Zones in the game.
+ * Gets all available zones.
+ * 
+ * For more information, see the [OpenPlanet Documentation](https://webservices.openplanet.dev/core/meta/zones)
+ * 
  * @returns List of all the zones in the game.
  */
 export const getAllZones = async () => {
@@ -25,26 +29,33 @@ export const getAllZones = async () => {
     return z.array(ZoneSchema).parse(response.data);
 }
 
-const CHUNK_SIZE = 100;
+export const CHUNK_SIZE_ZONE_PLAYERS = 150;
 
+/**
+ * Gets player zones from account IDs.
+ * 
+ * This endpoint is only accessible with tokens authenticated through Ubisoft user accounts (as opposed to dedicated server accounts). If you encounter 401 errors using a dedicated server account, switch to using a Ubisoft account.
+ * This endpoint has no intrinsic limit on the number of account IDs requested, but it will return a 414 error if the request URI length is 8220 characters or more (corresponding to just over 200 account IDs, depending on how you encode the URI).
+ * Thats why the max value in this project is set to 150.
+ * If an accountId is invalid, the response will contain an error message:
+ * 
+ * For more information, see the [OpenPlanet Documentation](https://webservices.openplanet.dev/core/accounts/zones)
+ * 
+ * @param accountIds A list of account IDs. *Max length*: {@link CHUNK_SIZE_ZONE_PLAYERS}
+ * @returns List of all the account IDs with the correct zone.
+ */
 export const getZonesOfPlayers = async (accountIds: string[]) => {
-    const chunks = chunkArray(accountIds, CHUNK_SIZE);
-    const accountZonesPromises = chunks.map(getZonesOfPlayersChunk);
-    const zones = await Promise.all(accountZonesPromises);
-    const zonesAsArray = zones.flat();
-    const zoneByAccountId: Record<string, string> = {};
-    zonesAsArray.forEach(zone => {
-        zoneByAccountId[zone.accountId] = zone.zoneId
-    });
-    return zoneByAccountId;
-}
-
-const getZonesOfPlayersChunk = async (accountIds: string[]) => {
-    if (accountIds.length > CHUNK_SIZE) {
-        throw new Error(`Illegal State: Too many account ids passed: ${accountIds.length}`)
+    if (accountIds.length === 0) return [];
+    if (accountIds.length > CHUNK_SIZE_ZONE_PLAYERS) {
+        throw new Error(`Illegal State: Too many account ids passed: ${accountIds.length} (Max: ${CHUNK_SIZE_ZONE_PLAYERS})`)
     }
-    const queryAccountZones = accountIds.join(",");
+
+    const accountIdList = accountIds.join(",");
+
     const token = await authentication.getAccessToken();
-    const responseZones = await get(`https://prod.trackmania.core.nadeo.online/accounts/zones/?accountIdList=${queryAccountZones}`, token);
+    const responseZones = await get(`https://prod.trackmania.core.nadeo.online/accounts/zones/`, {
+        params: { accountIdList },
+        token
+    });
     return z.array(AccountZoneSchema).parse(responseZones.data);
 }

@@ -1,13 +1,15 @@
 import express from "express";
 import { AdminController } from "../controllers";
+import { requiresAuthentication } from "../middleware/authentication";
 
 const router = express.Router();
 
-router.get("/refresh", AdminController.refreshCupOfTheDay);
-router.get("/refresh/tracks", AdminController.refreshTracksOfMonth);
+router.post("/service/:service", requiresAuthentication, AdminController.startService)
+
 router.get("/monitor/cotd", AdminController.getCotDStatus);
 router.get("/monitor/totd", AdminController.getTotDStatus);
+router.get("/status", AdminController.getStatus);
 
-router.get("/test", AdminController.test);
+router.post("/clearErrors", requiresAuthentication, AdminController.clearErrors);
 
 export default router;
