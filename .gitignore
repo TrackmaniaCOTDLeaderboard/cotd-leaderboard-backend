@@ -3,3 +3,4 @@ node_modules
 assets/
 Maniaplanet_Flags.zip
 dist
+prisma/dev.db

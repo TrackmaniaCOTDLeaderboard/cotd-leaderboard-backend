@@ -1,21 +1,11 @@
-const MAX_POINTS_MAIN_CUP = 1000;
-const MAX_POINTS_RERUN_CUP = 200;
+export const calculatePointDistribution = (maxAwardedPlayers: number, maxPoints: number, minPoints: number) => {
 
-const MIN_POINTS = 1;
+    if (maxAwardedPlayers < 2) throw new Error();
 
-const AWARDED_PLAYERS_MAIN_CUP = 640;
-const AWARDED_PLAYERS_RERUN_CUP = 128;
+    return (position: number) => {
+        if (position < 1 || position > maxAwardedPlayers) return 0;
 
-
-export const getPointsForPosition = (position: number, rerun: boolean) => {
-
-
-    const maxAwardedPlayers = rerun ? AWARDED_PLAYERS_RERUN_CUP : AWARDED_PLAYERS_MAIN_CUP;
-    const maxPoints = rerun ? MAX_POINTS_RERUN_CUP : MAX_POINTS_MAIN_CUP;
-
-    if (position < 0 || position > maxAwardedPlayers) {
-        throw new Error(`Illegal Argument: position must be between 1 and ${maxAwardedPlayers} but was ${position}`);
+        const points = minPoints + (maxPoints - minPoints) * (1 - Math.log10(position) / Math.log10(maxAwardedPlayers));
+        return Math.round(points);
     }
-
-    return MIN_POINTS + (maxPoints - MIN_POINTS) * (1 - Math.log10(position) / Math.log10(maxAwardedPlayers))
 }

@@ -15,9 +15,9 @@ type ServiceError = {
 
 const run = (service: string, config: unknown): Promise<void> => {
     return new Promise((resolve, reject) => {
-        const worker = new Worker(path.resolve(__dirname, `${service}.js`));
+        const worker = new Worker(path.resolve(__dirname, `./workers/${service}.js`));
 
-        worker.postMessage(config);
+        worker.postMessage(config ?? {});
 
         worker.on("message", (message: string) => {
             worker.terminate();
@@ -73,6 +73,7 @@ class ServiceManager {
             })
             .catch(error => {
                 const message = error.message ?? "Unknown error.";
+                console.error(error);
                 Log.error(message, service);
                 this.status[service] = IS_PAUSED;
 

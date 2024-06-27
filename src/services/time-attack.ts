@@ -35,7 +35,7 @@ export const updateTimeAttack = async (mapUid: string, mapId: string, seasonUid:
                     playerId: result.accountId,
                     mapId: mapId,
                     position: result.position,
-                    time: result.score,
+                    score: result.score,
                     locked: true
                 }
             })

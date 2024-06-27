@@ -62,17 +62,24 @@ const updateCup = async (competition: NadeoLiveService.Competition) => {
     const userIds = results.map(result => result.participant);
     await updatePlayers(userIds);
 
-    await database.cupResult.createMany({
-        data: results.map(result => {
-            return {
-                position: result.rank,
-                points: result.score,
-                cupId: competition.id,
-                playerId: result.participant
+
+    await database.$transaction([
+        database.cupResult.deleteMany({
+            where: {
+                cupId: competition.id
             }
         }),
-        skipDuplicates: true
-    });
+        database.cupResult.createMany({
+            data: results.map(result => {
+                return {
+                    position: result.rank,
+                    score: result.score,
+                    cupId: competition.id,
+                    playerId: result.participant
+                }
+            })
+        })
+    ]);
 
     return true;
 }
