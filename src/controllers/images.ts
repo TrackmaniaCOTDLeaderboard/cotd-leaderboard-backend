@@ -3,6 +3,7 @@ import { database } from "../database";
 import path from "path";
 import createHttpError from "http-errors";
 import fs from "fs";
+import { Log } from "../util";
 
 export const getFlag: RequestHandler = async (request, response, next) => {
     const zoneId = request.params.zoneId;
@@ -18,7 +19,9 @@ export const getFlag: RequestHandler = async (request, response, next) => {
 
     const filePath = path.join(__dirname, `../../assets/${zone.flag}`);
     if (!fs.existsSync(filePath)) {
-        return next(createHttpError(404, `Flag ${filePath} doesn't exist.`));
+        Log.error(`"${filePath}" doesnt exist. "${zone.name}"`);
+
+        return next(createHttpError(404, `Failed to load zone flag.`));
     }
 
     response.status(200).sendFile(filePath);
