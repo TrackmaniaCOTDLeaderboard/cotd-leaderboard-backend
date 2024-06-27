@@ -42,10 +42,7 @@ const updateChallenge = async (challenge: NadeoLiveService.Challenge) => {
             id: challenge.id
         },
         create: {
-            year: challengeMetaData.year,
-            month: challengeMetaData.month,
-            day: challengeMetaData.day,
-            version: challengeMetaData.version,
+            ...challengeMetaData,
             id: challenge.id,
             name: challenge.name,
             leaderboardId: challenge.leaderboardId
@@ -62,17 +59,28 @@ const updateChallenge = async (challenge: NadeoLiveService.Challenge) => {
     const userIds = results.map(result => result.player);
     await updatePlayers(userIds);
 
-    await database.challengeResult.createMany({
-        data: results.map(result => {
-            return {
-                position: result.rank,
-                time: result.score,
-                challengeId: challenge.id,
-                playerId: result.player
-            }
-        }),
-        skipDuplicates: true
-    });
+    try {
+        await database.$transaction([
+            database.challengeResult.deleteMany({
+                where: {
+                    challengeId: challenge.id
+                }
+            }),
+            database.challengeResult.createMany({
+                data: results.map(result => {
+                    return {
+                        position: result.rank,
+                        score: result.score,
+                        challengeId: challenge.id,
+                        playerId: result.player
+                    }
+                })
+            })
+        ]);
+    } catch (error) {
+        console.error(error);
+        Log.warn(`Failed ${challenge.name} because of ${error}`);
+    }
 
     return true;
 }
@@ -83,7 +91,7 @@ export const updateChallenges = async (length: number, offset: number, service: 
     for (const challenge of challenges) {
         const success = await updateChallenge(challenge);
         if (!success) continue;
-        await wait(1);
+        await wait(0.5);
 
         Log.info(`Updated "${challenge.name}"`, service);
         count++;

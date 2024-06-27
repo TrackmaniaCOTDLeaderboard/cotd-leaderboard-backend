@@ -1,52 +1,44 @@
-import numpy as np
 import matplotlib.pyplot as plt
-
-# Number of participants in the original tournament
-n_original = 640
-
-# Number of participants in the adjusted tournament
-n_adjusted = int(n_original * 0.2)
-max_adjusted_points = 200
-num_points_awarded = 128
-
-# Ranks for both tournaments
-ranks_original = np.arange(1, n_original + 1)
-ranks_adjusted = np.arange(1, num_points_awarded + 1)
+import numpy as np
 
 
-# Points distribution functions
-def points_logarithmic(r, n, max_points):
-    min_points = 1
-    return min_points + (max_points - min_points) * (1 - np.log10(r) / np.log10(n))
+def point_distribution(max_awarded_players, max_points, min_points):
+    def get_points(position):
+        points = min_points + (max_points - min_points) * (
+            1 - np.log10(position) / np.log10(max_awarded_players)
+        )
+        return round(points)
+
+    return get_points
 
 
-# Calculate the points for each rank in both tournaments
-points_original = points_logarithmic(ranks_original, n_original, 1000)
-points_adjusted = points_logarithmic(
-    ranks_adjusted, num_points_awarded, max_adjusted_points
-)
+scenarios = [
+    ("Time Attack", 256, 1000, 1),
+    ("Cup", 640, 1000, 1),
+    ("Cup Rerun", 128, 200, 1),
+    ("Challenge", 640, 1000, 1),
+    ("Challenge Rerun", 128, 200, 1),
+]
 
-# Plot the functions
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(12, 8))
 
-# Plot original points distribution
-plt.plot(
-    ranks_original,
-    points_original,
-    label="Original Points Distribution (Main (Top1000))",
-    color="blue",
-)
+# Different styles for overlapping scenarios
+styles = {
+    "Time Attack": {"color": "blue", "linestyle": "-"},
+    "Cup": {"color": "red", "linestyle": "-"},
+    "Cup Rerun": {"color": "green", "linestyle": "-"},
+    "Challenge": {"color": "orange", "linestyle": "--"},
+    "Challenge Rerun": {"color": "purple", "linestyle": "--"},
+}
 
-# Plot adjusted points distribution
-plt.plot(
-    ranks_adjusted,
-    points_adjusted,
-    label="Adjusted Points Distribution (Reruns (Top200))",
-    color="red",
-)
+for label, max_awarded_players, max_points, min_points in scenarios:
+    get_points = point_distribution(max_awarded_players, max_points, min_points)
+    positions = np.arange(1, max_awarded_players + 1)
+    points = [get_points(pos) for pos in positions]
+    plt.step(positions, points, where="mid", **styles[label], label=label)
 
-# Labels and title
-plt.xlabel("Rank")
+# Highlight the overlap by adjusting the plot properties
+plt.xlabel("Position")
 plt.ylabel("Points")
 plt.title(
     r"Points Distribution Comparison: $1 + (max - 1) \times \left(1 - \frac{\log_{10}(r)}{\log_{10}(n)}\right)$"
@@ -54,8 +46,4 @@ plt.title(
 plt.legend()
 plt.grid(True)
 
-# Save the plot as a JPG file
-plt.savefig("points_distribution_comparison.jpg", format="jpg")
-
-# Display the plot
-plt.show()
+plt.savefig("./points_distribution_comparison.jpg")

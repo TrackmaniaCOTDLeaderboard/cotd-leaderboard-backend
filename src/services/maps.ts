@@ -1,8 +1,8 @@
-import { record } from "zod";
 import { NadeoLiveService } from "../api";
 import { database } from "../database";
-import { calculateChunksDetails, chunkArray, wait } from "../util";
+import { calculateChunksDetails, chunkArray, getDateKey, Log, wait } from "../util";
 import { updatePlayers } from "./players";
+import { Service } from "./service-manager";
 import { updateTimeAttack } from "./time-attack";
 
 type TrackOfTheDayDetails = {
@@ -33,17 +33,32 @@ const getMapsInfo = async (mapUids: string[]) => {
     return tracks;
 }
 
+export const filterMaps = (sortedDays: Record<string, string>, length?: number) => {
+    if (length === undefined) return Object.values(sortedDays);
 
-export const updateMaps = async (length: number, offset: number) => {
-    const tracksOfMonths = await getTracksOfMonths(length, offset);
+    const sortedKeys = Object.keys(sortedDays).sort((a, b) => {
+        if (a > b) return -1;
+        if (a < b) return 1;
+        return 0;
+    });
+    const recentKeys = sortedKeys.slice(0, length);
+    return recentKeys.map(key => sortedDays[key]);
+}
 
-    const mapUids: string[] = [];
+
+export const updateMaps = async (months: number, offset: number, length?: number, service?: Service) => {
+
+    if (length !== undefined && length < 1) throw new Error("Illegal Argument: length must be at least 1.")
+
+    const tracksOfMonths = await getTracksOfMonths(months, offset);
+
     const sortedDays: Record<string, string> = {}
     const mapping: Record<string, TrackOfTheDayDetails> = {};
 
     tracksOfMonths.forEach(month => {
         month.days.forEach(day => {
-            mapUids.push(day.mapUid);
+            sortedDays[getDateKey(month.year, month.month, day.monthDay)] = day.mapUid;
+
             mapping[day.mapUid] = {
                 year: month.year,
                 month: month.month,
@@ -52,6 +67,8 @@ export const updateMaps = async (length: number, offset: number) => {
             }
         });
     });
+
+    const mapUids = filterMaps(sortedDays, length);
 
     const maps = await getMapsInfo(mapUids);
 
@@ -96,6 +113,7 @@ export const updateMaps = async (length: number, offset: number) => {
         });
 
         await updateTimeAttack(map.uid, map.mapId, details.seasonUid);
+        Log.complete(`${details.year}-${details.month}-${details.day} "${map.name}" updated.`, service)
     };
 
 }

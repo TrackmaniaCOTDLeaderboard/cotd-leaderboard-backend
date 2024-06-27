@@ -1,27 +1,6 @@
 import { MapperLeaderboard } from "@prisma/client";
 import { database } from "../database"
-
-const assignRanks = (leaderboard: MapperLeaderboard[]) => {
-    leaderboard.sort((a, b) => b.amount - a.amount);
-
-    let currentRank = 1;
-    let previousAmount: number | undefined = undefined;
-    let rankCount = 0;
-
-    leaderboard.forEach((entry, index) => {
-        if (previousAmount !== entry.amount) {
-            currentRank += rankCount;
-            rankCount = 1;
-        } else {
-            rankCount++;
-        }
-
-        entry.position = currentRank;
-        previousAmount = entry.amount;
-    });
-
-    return leaderboard;
-}
+import { assignRanks } from "../util/calculate-leaderboard";
 
 export const updateMapperLeaderboard = async () => {
     const players = await database.player.findMany({
@@ -41,7 +20,7 @@ export const updateMapperLeaderboard = async () => {
         if (amountOfMaps === 0) return;
         mapperLeaderboard.push({
             playerId: player.id,
-            amount: amountOfMaps,
+            points: amountOfMaps,
             position: 0
         })
     });

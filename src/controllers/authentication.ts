@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcryptjs";
 import createHttpError from "http-errors";
 import { env } from "../util";
 import jwt from "jsonwebtoken";
