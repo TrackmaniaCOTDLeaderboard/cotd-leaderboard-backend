@@ -15,8 +15,9 @@ const getChallenges = async (length: number, offset: number) => {
     const challenges: NadeoLiveService.Challenge[] = [];
     for (const challengeChunk of challengeChunks) {
         const result = await NadeoLiveService.getChallenges(challengeChunk.length, challengeChunk.offset);
+        if (result.length === 0) break;
         challenges.push(...result);
-        await wait(0.5)
+        await wait(0.5);
     }
     return challenges;
 }
@@ -25,10 +26,15 @@ const getChallengeResults = async (challengeId: number, length: number) => {
     const resultsChunks = calculateChunksDetails(NadeoLiveService.CHUNK_SIZE_CHALLENGE_RESULTS, length);
 
     const results: NadeoLiveService.ChallengeResult[] = [];
+
+    let count = 0;
     for (const resultChunk of resultsChunks) {
         const result = await NadeoLiveService.getChallengeResults(challengeId, resultChunk.length, resultChunk.offset);
         results.push(...result);
-        await wait(0.5)
+        count++;
+        if (count % 5 === 0) {
+            await wait(1);
+        }
     }
     return results;
 }
@@ -85,13 +91,14 @@ const updateChallenge = async (challenge: NadeoLiveService.Challenge) => {
     return true;
 }
 
+// TODO count
 export const updateChallenges = async (length: number, offset: number, service: Service) => {
     const challenges = await getChallenges(length, offset);
     let count = 0;
     for (const challenge of challenges) {
         const success = await updateChallenge(challenge);
         if (!success) continue;
-        await wait(0.5);
+        await wait(1);
 
         Log.info(`Updated "${challenge.name}"`, service);
         count++;

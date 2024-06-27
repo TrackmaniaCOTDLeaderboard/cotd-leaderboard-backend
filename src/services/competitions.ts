@@ -15,6 +15,7 @@ const getCompetitions = async (length: number, offset: number) => {
     for (const competitionChunk of competitionChunks) {
         const result = await NadeoLiveService.getCompetitions(competitionChunk.length, competitionChunk.offset);
         competitions.push(...result);
+        if (result.length === 0) break;
         await wait(0.5);
     }
     return competitions;
@@ -24,13 +25,18 @@ const getCompetitionResults = async (challengeId: number, length: number) => {
     const resultsChunks = calculateChunksDetails(NadeoLiveService.CHUNK_SIZE_COMPETITION_RESULTS, length);
 
     const results: NadeoLiveService.CompetitionResult[] = [];
+    let count = 0;
     for (const resultChunk of resultsChunks) {
         const result = await NadeoLiveService.getCompetitionResults(challengeId, resultChunk.length, resultChunk.offset);
         results.push(...result);
-        await wait(0.5)
+        count++;
+        if (count % 5 === 0) {
+            await wait(1);
+        }
     }
     return results;
 }
+
 
 const updateCup = async (competition: NadeoLiveService.Competition) => {
     const result = parseCompetition(competition.name);
@@ -84,6 +90,7 @@ const updateCup = async (competition: NadeoLiveService.Competition) => {
     return true;
 }
 
+// TODO count
 export const updateCompetitions = async (length: number, offset: number, service: Service) => {
 
     const competitions = await getCompetitions(length, offset);
