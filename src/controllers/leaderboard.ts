@@ -65,6 +65,32 @@ export const getGlobalTimeAttackLeaderboard: RequestHandler = async (request, re
     response.status(200).json(leaderboard);
 }
 
+export const getGlobalChallengeLeaderboard: RequestHandler = async (request, response, next) => {
+    const { name } = request.query;
+
+    const leaderboard = await database.globalChallengeLeaderboard.findMany({
+        where: {
+            player: typeof name === "string" ? {
+                name: {
+                    contains: name
+                }
+            } : undefined,
+        },
+        include: {
+            player: {
+                include: {
+                    zone: true
+                }
+            }
+        },
+        orderBy: {
+            position: "asc"
+        }
+    });
+
+    response.status(200).json(leaderboard);
+}
+
 export const getMonthlyCupLeaderboard: RequestHandler = async (request, response, next) => {
     const { name, version } = request.query;
     const { year, month } = request.params;
