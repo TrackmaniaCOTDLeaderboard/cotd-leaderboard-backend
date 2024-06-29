@@ -5,7 +5,6 @@ export default cleanEnv(process.env, {
     PORT: port(),
     MONITOR_USERNAME: str(),
     MONITOR_PASSWORD: str(),
-    DATABASE_URL: str(),
     USER_AGENT: str(),
     UBI_USERNAME: str(),
     UBI_PASSWORD: str(),
