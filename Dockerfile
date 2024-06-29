@@ -2,13 +2,13 @@ FROM node:20
 
 WORKDIR /usr/src/app
 
-RUN apt-get update && apt-get install -y git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+ENV DATABASE_URL file:./cotd.db
+COPY package*.json ./
 
-RUN git clone https://github.com/TrackmaniaCOTDLeaderboard/cotd-leaderboard-backend.git .
+RUN npm install
 
-RUN npm ci --only=production
+COPY . .
+
 RUN npx prisma generate
 RUN npx prisma migrate deploy
 RUN npm run build
