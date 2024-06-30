@@ -4,7 +4,12 @@ import createHttpError from "http-errors";
 import { env } from "../util";
 import jwt from "jsonwebtoken";
 
-export const login: RequestHandler = async (request, response, next) => {
+interface LoginBody {
+    username?: string,
+    password?: string,
+}
+
+export const login: RequestHandler<unknown, unknown, LoginBody, unknown> = async (request, response, next) => {
     const { username, password } = request.body;
 
     if (username === undefined || password === undefined || username !== env.MONITOR_USERNAME) {

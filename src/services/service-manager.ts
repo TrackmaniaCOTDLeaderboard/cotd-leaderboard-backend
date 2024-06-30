@@ -14,9 +14,9 @@ export const ServiceSchema = z.union([
 ]);
 
 export const ServiceConfigsSchemas = {
-    "update-mapper-leaderboard": z.undefined(),
+    "update-mapper-leaderboard": z.object({}),
     "update-maps": z.object({ length: z.number().optional(), offset: z.number().optional() }),
-    "update-zones": z.undefined(),
+    "update-zones": z.object({}),
     "update-competitions": z.object({ length: z.number().optional(), offset: z.number().optional() }),
     "update-challenges": z.object({ length: z.number().optional(), offset: z.number().optional() }),
     "periodical-update": z.object({ challenges: z.number().optional(), competitions: z.number().optional() }),
