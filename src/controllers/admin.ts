@@ -2,10 +2,6 @@ import { RequestHandler } from "express";
 import { database } from "../database";
 import { serviceManager } from "../services";
 
-export const startService: RequestHandler = (request, response, next) => {
-
-}
-
 const firstCotD = new Date('2020-11-01');
 
 export const getCotDStatus: RequestHandler = async (request, response) => {
