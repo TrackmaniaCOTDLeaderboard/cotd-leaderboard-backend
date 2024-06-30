@@ -1,8 +1,39 @@
 import { Log } from "../util";
 import { Worker } from "worker_threads";
 import path from "path";
+import { z } from "zod";
 
-export type Service = "update-mapper-leaderboard" | "update-zones" | "update-competitions" | "update-maps" | "update-challenges" | "periodical-update" | "initialize";
+export const ServiceSchema = z.union([
+    z.literal("update-mapper-leaderboard"),
+    z.literal("update-zones"),
+    z.literal("update-competitions"),
+    z.literal("update-maps"),
+    z.literal("update-challenges"),
+    z.literal("periodical-update"),
+    z.literal("initialize")
+]);
+
+export const ServiceConfigsSchemas = {
+    "update-mapper-leaderboard": z.undefined(),
+    "update-maps": z.object({ length: z.number().optional(), offset: z.number().optional() }),
+    "update-zones": z.undefined(),
+    "update-competitions": z.object({ length: z.number().optional(), offset: z.number().optional() }),
+    "update-challenges": z.object({ length: z.number().optional(), offset: z.number().optional() }),
+    "periodical-update": z.object({ challenges: z.number().optional(), competitions: z.number().optional() }),
+    "initialize": z.object({ challenges: z.number().optional(), competitions: z.number().optional(), months: z.number().optional() })
+}
+
+export type Service = z.infer<typeof ServiceSchema>;
+
+export type ServiceConfigs = {
+    "update-mapper-leaderboard": z.infer<typeof ServiceConfigsSchemas["update-mapper-leaderboard"]>,
+    "update-maps": z.infer<typeof ServiceConfigsSchemas["update-maps"]>,
+    "update-zones": z.infer<typeof ServiceConfigsSchemas["update-zones"]>,
+    "update-competitions": z.infer<typeof ServiceConfigsSchemas["update-competitions"]>,
+    "update-challenges": z.infer<typeof ServiceConfigsSchemas["update-challenges"]>,
+    "periodical-update": z.infer<typeof ServiceConfigsSchemas["periodical-update"]>,
+    "initialize": z.infer<typeof ServiceConfigsSchemas["initialize"]>
+}
 
 const IS_RUNNING = 1;
 const IS_PAUSED = 0;
@@ -13,7 +44,7 @@ type ServiceError = {
     timestamp: number;
 }
 
-const run = (service: string, config: unknown): Promise<void> => {
+const run = <T extends Service>(service: T, config?: ServiceConfigs[T]): Promise<void> => {
     return new Promise((resolve, reject) => {
         const worker = new Worker(path.resolve(__dirname, `./workers/${service}.js`));
 
@@ -58,7 +89,7 @@ class ServiceManager {
         }
     }
 
-    public start(service: Service, config?: unknown) {
+    public start<T extends Service>(service: T, config?: ServiceConfigs[T]) {
         if (this.status[service] === IS_RUNNING) {
             Log.error(`${service} is already running.`);
             return false;

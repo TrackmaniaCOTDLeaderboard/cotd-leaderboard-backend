@@ -16,4 +16,4 @@ ENV PORT=3000
 
 EXPOSE $PORT
 
-CMD ["sh", "-c", "npx prisma db seed && npx prisma migrate deploy && npm start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npm start"]
