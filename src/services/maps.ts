@@ -34,14 +34,13 @@ const getMapsInfo = async (mapUids: string[]) => {
 }
 
 export const filterMaps = (sortedDays: Record<string, string>, length?: number) => {
-    if (length === undefined) return Object.values(sortedDays);
-
     const sortedKeys = Object.keys(sortedDays).sort((a, b) => {
         if (a > b) return -1;
         if (a < b) return 1;
         return 0;
     });
-    const recentKeys = sortedKeys.slice(0, length);
+
+    const recentKeys = sortedKeys.slice(0, length ?? sortedKeys.length);
     return recentKeys.map(key => sortedDays[key]);
 }
 
@@ -57,6 +56,7 @@ export const updateMaps = async (months: number, offset: number, length?: number
 
     tracksOfMonths.forEach(month => {
         month.days.forEach(day => {
+            if (day.mapUid === "") return;
             sortedDays[getDateKey(month.year, month.month, day.monthDay)] = day.mapUid;
 
             mapping[day.mapUid] = {
