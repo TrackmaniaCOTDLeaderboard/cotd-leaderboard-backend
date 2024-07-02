@@ -219,7 +219,7 @@ export const getMonthlyTimeAttackLeaderboard: RequestHandler = async (request, r
 export const getMapperLeaderboard: RequestHandler = async (request, response, next) => {
     const { name } = request.query;
 
-    const leaderboard = await database.monthlyChallengeLeaderboard.findMany({
+    const leaderboard = await database.mapperLeaderboard.findMany({
         where: {
             player: typeof name === "string" ? {
                 name: {
