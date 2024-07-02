@@ -10,7 +10,10 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "dist"
+    ]
   },
   "keywords": [],
   "author": "",

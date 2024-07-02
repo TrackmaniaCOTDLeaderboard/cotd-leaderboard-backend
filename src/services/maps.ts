@@ -1,6 +1,7 @@
 import { NadeoLiveService } from "../api";
 import { database } from "../database";
 import { calculateChunksDetails, chunkArray, getDateKey, Log, wait } from "../util";
+import { getRecentKeys } from "../util/get-recent-keys";
 import { updatePlayers } from "./players";
 import { Service } from "./service-manager";
 import { updateTimeAttack } from "./time-attack";
@@ -33,18 +34,6 @@ const getMapsInfo = async (mapUids: string[]) => {
     return tracks;
 }
 
-export const filterMaps = (sortedDays: Record<string, string>, length?: number) => {
-    if (length === undefined) return Object.values(sortedDays);
-
-    const sortedKeys = Object.keys(sortedDays).sort((a, b) => {
-        if (a > b) return -1;
-        if (a < b) return 1;
-        return 0;
-    });
-    const recentKeys = sortedKeys.slice(0, length);
-    return recentKeys.map(key => sortedDays[key]);
-}
-
 
 export const updateMaps = async (months: number, offset: number, length?: number, service?: Service) => {
 
@@ -57,6 +46,7 @@ export const updateMaps = async (months: number, offset: number, length?: number
 
     tracksOfMonths.forEach(month => {
         month.days.forEach(day => {
+            if (day.mapUid === "") return;
             sortedDays[getDateKey(month.year, month.month, day.monthDay)] = day.mapUid;
 
             mapping[day.mapUid] = {
@@ -68,7 +58,7 @@ export const updateMaps = async (months: number, offset: number, length?: number
         });
     });
 
-    const mapUids = filterMaps(sortedDays, length);
+    const mapUids = getRecentKeys(sortedDays, length);
 
     const maps = await getMapsInfo(mapUids);
 

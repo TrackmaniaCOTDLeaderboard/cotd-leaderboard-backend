@@ -7,6 +7,7 @@ const PASSWORD = env.UBI_PASSWORD;
 const BASE64_ENCODED = encodeBase64(`${USERNAME}:${PASSWORD}`);
 const BASIC_AUTHENTICATION = `Basic ${BASE64_ENCODED}`;
 
+// TODO check if refresh token is expired
 export class TokenManager {
 
     private accessToken?: string;

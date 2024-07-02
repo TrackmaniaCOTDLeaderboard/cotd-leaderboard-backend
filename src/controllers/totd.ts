@@ -37,15 +37,13 @@ export const getTotdsByYear: RequestHandler = async (request, response, next) =>
     const { year } = request.params;
 
     if (year === undefined) {
-        next(createHttpError(400, "Please provide a 'year' parameter."));
-        return
+        return next(createHttpError(400, "Please provide a 'year' parameter."));
     }
 
     const yearAsInt = parseInt(year);
 
     if (Number.isNaN(yearAsInt)) {
-        next(createHttpError(400, `"${year}" is not a valid year.`));
-        return;
+        return next(createHttpError(400, `"${year}" is not a valid year.`));
     }
 
     const result = await database.map.findMany({
@@ -63,7 +61,6 @@ export const getTotdsByYear: RequestHandler = async (request, response, next) =>
 
 export const getTotdsByYearMonthAndDay: RequestHandler = async (request, response, next) => {
     const { year, month, day } = request.params;
-
 
     if (year === undefined || month === undefined || day === undefined) {
         next(createHttpError(400, "Please provide a 'year', 'month' and 'day' parameter."));
@@ -88,6 +85,7 @@ export const getTotdsByYearMonthAndDay: RequestHandler = async (request, respons
         next(createHttpError(400, `"${day}" is not a valid day.`));
         return;
     }
+
 
     const result = await database.map.findUnique({
         where: {
