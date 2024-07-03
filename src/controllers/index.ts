@@ -4,3 +4,5 @@ export * as ImagesController from "./images";
 export * as AuthenticationController from "./authentication";
 export * as LeaderboardController from "./leaderboard";
 export * as ServiceController from "./services";
+export * as CotdController from "./cotd";
+export * as ChallengeController from "./challenge";
