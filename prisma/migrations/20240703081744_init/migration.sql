@@ -1,4 +1,15 @@
 -- CreateTable
+CREATE TABLE "Zone" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "flag" TEXT NOT NULL,
+    "parentId" TEXT,
+    "displayId" TEXT,
+    CONSTRAINT "Zone_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Zone" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Zone_displayId_fkey" FOREIGN KEY ("displayId") REFERENCES "Zone" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "Player" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
@@ -19,28 +30,6 @@ CREATE TABLE "Cup" (
 );
 
 -- CreateTable
-CREATE TABLE "Challenge" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "name" TEXT NOT NULL,
-    "year" INTEGER NOT NULL,
-    "month" INTEGER NOT NULL,
-    "day" INTEGER NOT NULL,
-    "version" INTEGER NOT NULL,
-    "leaderboardId" INTEGER NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "Zone" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "flag" TEXT NOT NULL,
-    "parentId" TEXT,
-    "displayId" TEXT,
-    CONSTRAINT "Zone_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Zone" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "Zone_displayId_fkey" FOREIGN KEY ("displayId") REFERENCES "Zone" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
 CREATE TABLE "CupResult" (
     "position" INTEGER NOT NULL,
     "score" INTEGER NOT NULL,
@@ -50,6 +39,17 @@ CREATE TABLE "CupResult" (
     PRIMARY KEY ("cupId", "playerId"),
     CONSTRAINT "CupResult_cupId_fkey" FOREIGN KEY ("cupId") REFERENCES "Cup" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "CupResult_playerId_fkey" FOREIGN KEY ("playerId") REFERENCES "Player" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Challenge" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "year" INTEGER NOT NULL,
+    "month" INTEGER NOT NULL,
+    "day" INTEGER NOT NULL,
+    "version" INTEGER NOT NULL,
+    "leaderboardId" INTEGER NOT NULL
 );
 
 -- CreateTable
@@ -241,6 +241,12 @@ CREATE TABLE "MonthlyChallengeLeaderboard" (
     PRIMARY KEY ("playerId", "version", "month", "year"),
     CONSTRAINT "MonthlyChallengeLeaderboard_playerId_fkey" FOREIGN KEY ("playerId") REFERENCES "Player" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Cup_year_month_day_version_key" ON "Cup"("year", "month", "day", "version");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Challenge_year_month_day_version_key" ON "Challenge"("year", "month", "day", "version");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Map_year_month_day_key" ON "Map"("year", "month", "day");
