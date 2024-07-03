@@ -18,7 +18,7 @@ type ResultWithCup = Result & {
 
 type PlayerWithResult = {
     id: string;
-    CupResults: ResultWithCup[];
+    cupResults: ResultWithCup[];
 }
 
 type LeaderboardEntry = Statistics & {
@@ -52,9 +52,9 @@ export const calculateLeaderboard = (players: PlayerWithResult[]) => {
     const morningRerunLeaderboardEntries: LeaderboardEntry[] = [];
 
     players.forEach(player => {
-        const main = calculateLeaderboardEntryOfPlayers(player.id, player.CupResults, MAIN_VERSION);
-        const nightRerun = calculateLeaderboardEntryOfPlayers(player.id, player.CupResults, NIGHT_RERUN_VERSION);
-        const morningRerun = calculateLeaderboardEntryOfPlayers(player.id, player.CupResults, MORNING_RERUN_VERSION);
+        const main = calculateLeaderboardEntryOfPlayers(player.id, player.cupResults, MAIN_VERSION);
+        const nightRerun = calculateLeaderboardEntryOfPlayers(player.id, player.cupResults, NIGHT_RERUN_VERSION);
+        const morningRerun = calculateLeaderboardEntryOfPlayers(player.id, player.cupResults, MORNING_RERUN_VERSION);
 
         if (main !== null) mainLeaderboardEntries.push(main);
         if (nightRerun !== null) nightRerunLeaderboardEntries.push(nightRerun);
@@ -71,7 +71,7 @@ export const calculateLeaderboard = (players: PlayerWithResult[]) => {
 export const updateMonthlyCupLeaderboard = async (year: number, month: number) => {
     const players = await database.player.findMany({
         include: {
-            CupResults: {
+            cupResults: {
                 where: {
                     cup: { year, month },
                 },
@@ -98,7 +98,7 @@ export const updateMonthlyCupLeaderboard = async (year: number, month: number) =
 export const updateGlobalCupLeaderboard = async () => {
     const players = await database.player.findMany({
         include: {
-            CupResults: {
+            cupResults: {
                 include: {
                     cup: { select: { version: true } }
                 }

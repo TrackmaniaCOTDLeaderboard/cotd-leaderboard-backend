@@ -13,47 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Player {
-  id                           String                         @id
-  name                         String
-  zone                         Zone                           @relation(fields: [zoneId], references: [id])
-  zoneId                       String
-  CupResults                   CupResult[]
-  Maps                         Map[]
-  ChallengeResults             ChallengeResult[]
-  TimeAttack                   TimeAttack[]
-  GlobalCupLeaderboard         GlobalCupLeaderboard[]
-  MonthlyCupLeaderboard        MonthlyCupLeaderboard[]
-  MapperLeaderboard            MapperLeaderboard[]
-  GlobalTimeAttackLeaderboard  GlobalTimeAttackLeaderboard[]
-  MonthlyTimeAttackLeaderboard MonthlyTimeAttackLeaderboard[]
-  GlobalChallengeLeaderboard   GlobalChallengeLeaderboard[]
-  MonthlyChallengeLeaderboard  MonthlyChallengeLeaderboard[]
-}
-
-model Cup {
-  id            Int         @id
-  name          String
-  participants  Int
-  year          Int
-  month         Int
-  day           Int
-  version       Int
-  leaderboardId Int
-  cupResults    CupResult[]
-}
-
-model Challenge {
-  id              Int               @id
-  name            String
-  year            Int
-  month           Int
-  day             Int
-  version         Int
-  leaderboardId   Int
-  challengeResult ChallengeResult[]
-}
-
 model Zone {
   id        String   @id
   name      String
@@ -67,6 +26,38 @@ model Zone {
   players   Player[]
 }
 
+model Player {
+  id                           String                         @id
+  name                         String
+  zone                         Zone                           @relation(fields: [zoneId], references: [id])
+  zoneId                       String
+  cupResults                   CupResult[]
+  Maps                         Map[]
+  challengeResults             ChallengeResult[]
+  timeAttack                   TimeAttack[]
+  globalCupLeaderboard         GlobalCupLeaderboard[]
+  monthlyCupLeaderboard        MonthlyCupLeaderboard[]
+  mapperLeaderboard            MapperLeaderboard[]
+  globalTimeAttackLeaderboard  GlobalTimeAttackLeaderboard[]
+  monthlyTimeAttackLeaderboard MonthlyTimeAttackLeaderboard[]
+  globalChallengeLeaderboard   GlobalChallengeLeaderboard[]
+  monthlyChallengeLeaderboard  MonthlyChallengeLeaderboard[]
+}
+
+model Cup {
+  id            Int         @id
+  name          String
+  participants  Int
+  year          Int
+  month         Int
+  day           Int
+  version       Int
+  leaderboardId Int
+  cupResults    CupResult[]
+
+  @@unique([year, month, day, version])
+}
+
 model CupResult {
   cup      Cup    @relation(fields: [cupId], references: [id])
   player   Player @relation(fields: [playerId], references: [id])
@@ -76,6 +67,19 @@ model CupResult {
   playerId String
 
   @@id([cupId, playerId])
+}
+
+model Challenge {
+  id               Int               @id
+  name             String
+  year             Int
+  month            Int
+  day              Int
+  version          Int
+  leaderboardId    Int
+  challengeResults ChallengeResult[]
+
+  @@unique([year, month, day, version])
 }
 
 model ChallengeResult {
@@ -109,7 +113,7 @@ model Map {
   day        Int
   upvotes    Int
   downvotes  Int
-  TimeAttack TimeAttack[]
+  timeAttack TimeAttack[]
 
   @@unique([year, month, day])
 }

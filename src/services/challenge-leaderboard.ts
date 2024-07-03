@@ -20,7 +20,7 @@ type ResultWithChallenge = Result & {
 
 type PlayerWithResult = {
     id: string;
-    ChallengeResults: ResultWithChallenge[];
+    challengeResults: ResultWithChallenge[];
 }
 
 type LeaderboardEntry = Statistics & {
@@ -54,9 +54,9 @@ export const calculateLeaderboard = (players: PlayerWithResult[]) => {
     const morningRerunLeaderboardEntries: LeaderboardEntry[] = [];
 
     players.forEach(player => {
-        const main = calculateLeaderboardEntryOfPlayers(player.id, player.ChallengeResults, MAIN_VERSION);
-        const nightRerun = calculateLeaderboardEntryOfPlayers(player.id, player.ChallengeResults, NIGHT_RERUN_VERSION);
-        const morningRerun = calculateLeaderboardEntryOfPlayers(player.id, player.ChallengeResults, MORNING_RERUN_VERSION);
+        const main = calculateLeaderboardEntryOfPlayers(player.id, player.challengeResults, MAIN_VERSION);
+        const nightRerun = calculateLeaderboardEntryOfPlayers(player.id, player.challengeResults, NIGHT_RERUN_VERSION);
+        const morningRerun = calculateLeaderboardEntryOfPlayers(player.id, player.challengeResults, MORNING_RERUN_VERSION);
 
         if (main !== null) mainLeaderboardEntries.push(main);
         if (nightRerun !== null) nightRerunLeaderboardEntries.push(nightRerun);
@@ -73,7 +73,7 @@ export const calculateLeaderboard = (players: PlayerWithResult[]) => {
 export const updateMonthlyChallengeLeaderboard = async (year: number, month: number) => {
     const players = await database.player.findMany({
         include: {
-            ChallengeResults: {
+            challengeResults: {
                 where: {
                     challenge: { year, month },
                 },
@@ -103,7 +103,7 @@ export const updateMonthlyChallengeLeaderboard = async (year: number, month: num
 export const updateGlobalChallengeLeaderboard = async () => {
     const players = await database.player.findMany({
         include: {
-            ChallengeResults: {
+            challengeResults: {
                 include: {
                     challenge: { select: { version: true } }
                 }

@@ -96,7 +96,20 @@ export const getTotdsByYearMonthAndDay: RequestHandler = async (request, respons
             }
         },
         include: {
-            author: true,
+            author: {
+                include: {
+                    zone: true
+                }
+            },
+            timeAttack: {
+                include: {
+                    player: {
+                        include: {
+                            zone: true
+                        }
+                    }
+                }
+            }
         }
     });
 

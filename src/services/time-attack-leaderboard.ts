@@ -14,7 +14,7 @@ type ResultWithChallenge = Result & {
 
 type PlayerWithResult = {
     id: string;
-    TimeAttack: ResultWithChallenge[];
+    timeAttack: ResultWithChallenge[];
 }
 
 type LeaderboardEntry = Statistics & {
@@ -40,7 +40,7 @@ export const calculateLeaderboard = (players: PlayerWithResult[]) => {
     const leaderboardEntries: LeaderboardEntry[] = [];
 
     players.forEach(player => {
-        const main = calculateLeaderboardEntryOfPlayers(player.id, player.TimeAttack);
+        const main = calculateLeaderboardEntryOfPlayers(player.id, player.timeAttack);
         if (main !== null) leaderboardEntries.push(main);
     })
 
@@ -51,7 +51,7 @@ export const calculateLeaderboard = (players: PlayerWithResult[]) => {
 export const updateMonthlyTimeAttackLeaderboard = async (year: number, month: number) => {
     const players = await database.player.findMany({
         include: {
-            TimeAttack: {
+            timeAttack: {
                 where: {
                     map: { year, month },
                 },
@@ -81,7 +81,7 @@ export const updateMonthlyTimeAttackLeaderboard = async (year: number, month: nu
 export const updateGlobalTimeAttackLeaderboard = async () => {
     const players = await database.player.findMany({
         include: {
-            TimeAttack: {
+            timeAttack: {
                 include: {
                     map: { select: { year: true, month: true } }
                 }
