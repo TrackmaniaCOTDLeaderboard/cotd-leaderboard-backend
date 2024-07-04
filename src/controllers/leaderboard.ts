@@ -1,28 +1,40 @@
 import { RequestHandler } from "express";
-import { database } from "../database";
 import createHttpError from "http-errors";
+import Joi from "joi";
+import { database } from "../database";
 
-export const getGlobalCupLeaderboard: RequestHandler = async (request, response, next) => {
-    const { name, version } = request.query;
+const leaderboardVersionQuerySchema = Joi.object({
+    version: Joi.number().integer().min(1).max(3).default(1),
+    name: Joi.string().min(3).optional()
+});
 
-    if (version === undefined || typeof version !== "string") {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
+const leaderboardQuerySchema = Joi.object({
+    name: Joi.string().min(3).optional()
+});
+
+
+const monthlyLeaderboardParamsSchema = Joi.object({
+    year: Joi.number().integer().min(2020).required(),
+    month: Joi.number().integer().min(1).max(12).required(),
+});
+
+export const getGlobalCupLeaderboard: RequestHandler = (request, response, next) => {
+
+    const parsedQuery = leaderboardVersionQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const versionAsNumber = parseInt(version);
+    const { name, version } = parsedQuery.value;
 
-    if (versionAsNumber < 1 || versionAsNumber > 3 || Number.isNaN(versionAsNumber)) {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
-    }
-
-    const leaderboard = await database.globalCupLeaderboard.findMany({
+    database.globalCupLeaderboard.findMany({
         where: {
-            player: typeof name === "string" ? {
+            player: {
                 name: {
                     contains: name
                 }
-            } : undefined,
-            version: versionAsNumber
+            },
+            version
         },
         include: {
             player: {
@@ -34,21 +46,26 @@ export const getGlobalCupLeaderboard: RequestHandler = async (request, response,
         orderBy: {
             position: "asc"
         }
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error);
+        next(createHttpError(500, "Failed to get global cup leaderboard."))
     });
-
-    response.status(200).json(leaderboard);
 }
 
-export const getGlobalTimeAttackLeaderboard: RequestHandler = async (request, response, next) => {
-    const { name } = request.query;
+export const getGlobalTimeAttackLeaderboard: RequestHandler = (request, response, next) => {
+    const parsedQuery = leaderboardQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
+    }
+    const { name } = parsedQuery.value;
 
-    const leaderboard = await database.globalTimeAttackLeaderboard.findMany({
+    database.globalTimeAttackLeaderboard.findMany({
         where: {
-            player: typeof name === "string" ? {
+            player: {
                 name: {
                     contains: name
                 }
-            } : undefined,
+            },
         },
         include: {
             player: {
@@ -60,21 +77,28 @@ export const getGlobalTimeAttackLeaderboard: RequestHandler = async (request, re
         orderBy: {
             position: "asc"
         }
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error);
+        next(createHttpError(500, "Failed to get global time attack leaderboard."))
     });
-
-    response.status(200).json(leaderboard);
 }
 
-export const getGlobalChallengeLeaderboard: RequestHandler = async (request, response, next) => {
-    const { name } = request.query;
+export const getGlobalChallengeLeaderboard: RequestHandler = (request, response, next) => {
+    const parsedQuery = leaderboardVersionQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
+    }
 
-    const leaderboard = await database.globalChallengeLeaderboard.findMany({
+    const { name, version } = parsedQuery.value;
+
+    database.globalChallengeLeaderboard.findMany({
         where: {
-            player: typeof name === "string" ? {
+            player: {
                 name: {
                     contains: name
                 }
-            } : undefined,
+            },
+            version
         },
         include: {
             player: {
@@ -86,37 +110,36 @@ export const getGlobalChallengeLeaderboard: RequestHandler = async (request, res
         orderBy: {
             position: "asc"
         }
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error)
+        next(createHttpError(500, "Failed to get global challenge leaderboard."))
     });
-
-    response.status(200).json(leaderboard);
 }
 
-export const getMonthlyCupLeaderboard: RequestHandler = async (request, response, next) => {
-    const { name, version } = request.query;
-    const { year, month } = request.params;
-
-    if (version === undefined || typeof version !== "string") {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
+export const getMonthlyCupLeaderboard: RequestHandler = (request, response, next) => {
+    const parsedQuery = leaderboardVersionQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const versionAsNumber = parseInt(version);
-    const yearAsNumber = parseInt(year);
-    const monthAsNumber = parseInt(month);
-
-    if (versionAsNumber < 1 || versionAsNumber > 3 || Number.isNaN(versionAsNumber)) {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
+    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.query);
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
     }
 
-    const leaderboard = await database.monthlyCupLeaderboard.findMany({
+    const { name, version } = parsedQuery.value;
+    const { year, month } = parsedParams.value;
+
+    database.monthlyCupLeaderboard.findMany({
         where: {
-            player: typeof name === "string" ? {
+            player: {
                 name: {
                     contains: name
                 }
-            } : undefined,
-            version: versionAsNumber,
-            year: yearAsNumber,
-            month: monthAsNumber
+            },
+            version,
+            year,
+            month
         },
         include: {
             player: {
@@ -128,37 +151,36 @@ export const getMonthlyCupLeaderboard: RequestHandler = async (request, response
         orderBy: {
             position: "asc"
         }
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error)
+        next(createHttpError(500, `Failed to get montlhy cup leaderboard of ${year}-${month}.`))
     });
-
-    response.status(200).json(leaderboard);
 }
 
-export const getMonthlyChallengeLeaderboard: RequestHandler = async (request, response, next) => {
-    const { name, version } = request.query;
-    const { year, month } = request.params;
-
-    if (version === undefined || typeof version !== "string") {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
+export const getMonthlyChallengeLeaderboard: RequestHandler = (request, response, next) => {
+    const parsedQuery = leaderboardVersionQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const versionAsNumber = parseInt(version);
-    const yearAsNumber = parseInt(year);
-    const monthAsNumber = parseInt(month);
-
-    if (versionAsNumber < 1 || versionAsNumber > 3 || Number.isNaN(versionAsNumber)) {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
+    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.query);
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
     }
 
-    const leaderboard = await database.monthlyChallengeLeaderboard.findMany({
+    const { name, version } = parsedQuery.value;
+    const { year, month } = parsedParams.value;
+
+    database.monthlyChallengeLeaderboard.findMany({
         where: {
-            player: typeof name === "string" ? {
+            player: {
                 name: {
                     contains: name
                 }
-            } : undefined,
-            version: versionAsNumber,
-            year: yearAsNumber,
-            month: monthAsNumber
+            },
+            version,
+            year,
+            month
         },
         include: {
             player: {
@@ -170,36 +192,35 @@ export const getMonthlyChallengeLeaderboard: RequestHandler = async (request, re
         orderBy: {
             position: "asc"
         }
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error);
+        next(createHttpError(500, `Failed to get monthly challenge leaderboard of ${year}-${month}.`))
     });
-
-    response.status(200).json(leaderboard);
 }
 
-export const getMonthlyTimeAttackLeaderboard: RequestHandler = async (request, response, next) => {
-    const { name, version } = request.query;
-    const { year, month } = request.params;
-
-    if (version === undefined || typeof version !== "string") {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
+export const getMonthlyTimeAttackLeaderboard: RequestHandler = (request, response, next) => {
+    const parsedQuery = leaderboardQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const versionAsNumber = parseInt(version);
-    const yearAsNumber = parseInt(year);
-    const monthAsNumber = parseInt(month);
-
-    if (versionAsNumber < 1 || versionAsNumber > 3 || Number.isNaN(versionAsNumber)) {
-        return next(createHttpError(400, `Please provide a valid cup version (main: 1, night: 2, morning: 3)`))
+    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.query);
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
     }
 
-    const leaderboard = await database.monthlyTimeAttackLeaderboard.findMany({
+    const { name } = parsedQuery.value;
+    const { year, month } = parsedParams.value;
+
+    database.monthlyTimeAttackLeaderboard.findMany({
         where: {
-            player: typeof name === "string" ? {
+            player: {
                 name: {
                     contains: name
                 }
-            } : undefined,
-            year: yearAsNumber,
-            month: monthAsNumber
+            },
+            year,
+            month
         },
         include: {
             player: {
@@ -211,21 +232,27 @@ export const getMonthlyTimeAttackLeaderboard: RequestHandler = async (request, r
         orderBy: {
             position: "asc"
         }
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error);
+        next(createHttpError(500, `Failed to get monthly time attack leaderboard of ${year}-${month}.`))
     });
-
-    response.status(200).json(leaderboard);
 }
 
-export const getMapperLeaderboard: RequestHandler = async (request, response, next) => {
-    const { name } = request.query;
+export const getMapperLeaderboard: RequestHandler = (request, response, next) => {
+    const parsedQuery = leaderboardQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
+    }
 
-    const leaderboard = await database.mapperLeaderboard.findMany({
+    const { name } = parsedQuery.value;
+
+    database.mapperLeaderboard.findMany({
         where: {
-            player: typeof name === "string" ? {
+            player: {
                 name: {
                     contains: name
                 }
-            } : undefined,
+            }
         },
         include: {
             player: {
@@ -237,7 +264,8 @@ export const getMapperLeaderboard: RequestHandler = async (request, response, ne
         orderBy: {
             position: "asc"
         }
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error)
+        next(createHttpError(500, "Failed to get mapper leaderboard"))
     });
-
-    response.status(200).json(leaderboard);
 }
