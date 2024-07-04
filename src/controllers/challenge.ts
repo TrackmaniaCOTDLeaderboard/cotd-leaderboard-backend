@@ -2,43 +2,44 @@ import { RequestHandler } from "express";
 import { database } from "../database";
 import createHttpError from "http-errors";
 
-export const getChallengesByYearAndMonthAndDay: RequestHandler = async (request, response, next) => {
-    const { year, month, day } = request.params;
-    const { version } = request.query;
+import Joi from 'joi';
 
-    if (year === undefined || day === undefined || month === undefined || version === undefined || typeof version !== "string") {
-        return next(createHttpError(400, "Please provide a 'year' and a 'month' parameter."));
+const challengeQuerySchema = Joi.object({
+    version: Joi.number().integer().min(1).max(3).default(1)
+});
+
+const challengeParameterSchema = Joi.object({
+    year: Joi.number().integer().min(2020).required(),
+    month: Joi.number().integer().min(1).max(12).required(),
+    day: Joi.number().integer().min(1).max(31).required(),
+});
+
+/**
+ * Retrieves a challenge from the database based on year, month, day, and version.
+ *
+ * @param request - The Express Request object.
+ * @param response - The Express Response object.
+ * @param next - The Express Next function.
+ * @throws `400` - If query or parameter validation fails.
+ * @throws `500` - If there's an error retrieving the challenge from the database.
+ */
+export const getChallengeByYearAndMonthAndDay: RequestHandler = (request, response, next) => {
+    const parsedQuery = challengeQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const yearAsInt = parseInt(year);
-    const monthAsInt = parseInt(month);
-    const versionAsInt = parseInt(version);
-    const dayAsInt = parseInt(day);
-
-    if (Number.isNaN(yearAsInt)) {
-        return next(createHttpError(400, `"${year}" is not a valid year.`));
+    const parsedParams = challengeParameterSchema.validate(request.params);
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
     }
 
-    if (Number.isNaN(monthAsInt)) {
-        return next(createHttpError(400, `"${month}" is not a valid month.`));
-    }
+    const { version } = parsedQuery.value;
+    const { year, month, day } = parsedParams.value;
 
-    if (Number.isNaN(dayAsInt)) {
-        return next(createHttpError(400, `"${day}" is not a valid day.`));
-    }
-
-    if (versionAsInt < 1 || versionAsInt > 3) {
-        return next(createHttpError(400, `${version} is not a valid version.`))
-    }
-
-    const result = await database.challenge.findUnique({
+    database.challenge.findUnique({
         where: {
-            year_month_day_version: {
-                year: yearAsInt,
-                month: monthAsInt,
-                day: dayAsInt,
-                version: versionAsInt
-            }
+            year_month_day_version: { year, month, day, version }
         },
         include: {
             challengeResults: {
@@ -48,10 +49,16 @@ export const getChallengesByYearAndMonthAndDay: RequestHandler = async (request,
                             zone: true
                         }
                     }
+                },
+                orderBy: {
+                    position: "asc"
                 }
             },
         }
-    });
+    }).then(challenge => response.status(200).json(challenge))
+        .catch(error => {
+            console.error(error);
+            next(createHttpError(500, `Failed to get challenge ${year}-${month}-${day} #${version}.`))
+        });
 
-    response.status(200).json(result);
 }

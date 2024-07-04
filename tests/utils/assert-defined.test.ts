@@ -1,4 +1,4 @@
-import { assertIsDefined } from './assert-defined';
+import { assertIsDefined } from '../../src/util/assert-defined';
 
 describe('assertIsDefined', () => {
     it('should not throw an error if the value is defined', () => {

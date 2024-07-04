@@ -1,4 +1,4 @@
-import { encodeBase64, decodeBase64 } from "./base64";
+import { encodeBase64, decodeBase64 } from "../../src/util/base64";
 
 describe("encodeBase64 function", () => {
     it("should encode a string to base64 correctly", () => {

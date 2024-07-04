@@ -1,6 +1,6 @@
-import { parseCompetition, parseChallenge } from "./cotd-parser";
-import { Competition } from "../api/live-service/competitions";
-import { Challenge } from "../api/live-service/challenges";
+import { parseCompetition, parseChallenge } from "../../src/util/cotd-parser";
+import { Competition } from "../../src/api/live-service/competitions";
+import { Challenge } from "../../src/api/live-service/challenges";
 
 describe("parseCompetition", () => {
     it("should correctly parse a valid competition name with date and version", () => {

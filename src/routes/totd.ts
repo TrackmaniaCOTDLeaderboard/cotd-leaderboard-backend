@@ -3,7 +3,6 @@ import { TotdController } from "../controllers";
 
 const router = express.Router();
 
-router.get("/:year", TotdController.getTotdsByYear);
 router.get("/:year/:month", TotdController.getTotdsByYearAndMonth);
 router.get("/:year/:month/:day", TotdController.getTotdsByYearMonthAndDay);
 

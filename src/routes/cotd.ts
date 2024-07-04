@@ -3,6 +3,6 @@ import { CotdController } from "../controllers";
 
 const router = express.Router();
 
-router.get("/:year/:month/:day", CotdController.getCotdsByYearAndMonthAndDay);
+router.get("/:year/:month/:day", CotdController.getCotdByYearAndMonthAndDay);
 
 export default router;

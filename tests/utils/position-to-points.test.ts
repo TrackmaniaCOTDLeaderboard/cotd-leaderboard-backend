@@ -1,4 +1,4 @@
-import { calculatePointDistribution } from "./position-to-points";
+import { calculatePointDistribution } from "../../src/util/position-to-points";
 
 describe("pointDistribution", () => {
     it("should distribute points correctly", () => {
