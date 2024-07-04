@@ -30,11 +30,11 @@ The function for the positions in between is shown in the diagram below.
 
 #### Main Cup
 
-\(\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{640})}\right) \)
+$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{640})}\right) $$
 
 #### Rerun Cup
 
-\(\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{128})}\right) \)
+$$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{128})}\right) $$
 
 ![Point Distribution Cups](images/points_distribution_comparison_Main%20Cup-Rerun%20Cup.jpg)
 
@@ -47,11 +47,11 @@ The function for the positions in between is shown in the diagram below.
 
 #### Main Challenge
 
-\(\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{640})}\right) \)
+$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{640})}\right) $$
 
 #### Rerun Challenge
 
-\(\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{128})}\right) \)
+$$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{128})}\right) $$
 
 ![Point Distribution Cups](images/points_distribution_comparison_Main%20Challenge-Rerun%20Challenge.jpg)
 
