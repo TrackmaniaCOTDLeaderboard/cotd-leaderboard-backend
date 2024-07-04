@@ -22,13 +22,24 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
             zone: true,
             mapperLeaderboard: true,
             monthlyCupLeaderboard: {
-                orderBy: { year: "asc", month: "asc", version: "asc" }
+                orderBy: [
+                    { year: "asc" },
+                    { month: "asc" },
+                    { version: "asc" }
+                ]
             },
             monthlyChallengeLeaderboard: {
-                orderBy: { year: "asc", month: "asc", version: "asc" }
+                orderBy: [
+                    { year: "asc" },
+                    { month: "asc" },
+                    { version: "asc" }
+                ]
             },
             monthlyTimeAttackLeaderboard: {
-                orderBy: { year: "asc", month: "asc" }
+                orderBy: [
+                    { year: "asc" },
+                    { month: "asc" }
+                ]
             },
             globalChallengeLeaderboard: {
                 orderBy: { version: "asc" }

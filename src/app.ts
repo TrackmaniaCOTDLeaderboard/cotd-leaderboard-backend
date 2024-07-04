@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express, { json, Request, Response, NextFunction } from "express";
 import cors from "cors";
-import { AdminRouter, TotdRouter, ImagesRouter, AuthenticationRouter, LeaderboardRouter, ServiceRouter, ChallengeRouter, CotdRouter } from "./routes";
+import { AdminRouter, TotdRouter, PlayerRouter, ImagesRouter, AuthenticationRouter, LeaderboardRouter, ServiceRouter, ChallengeRouter, CotdRouter } from "./routes";
 import createHttpError, { isHttpError } from "http-errors";
 import { Log } from "./util";
 import morgan from "morgan";
@@ -20,6 +20,7 @@ app.use("/challenge", ChallengeRouter);
 app.use("/img", ImagesRouter);
 app.use("/leaderboard", LeaderboardRouter);
 app.use("/service", ServiceRouter);
+app.use("/player", PlayerRouter);
 
 // Handling of unknown endpoints
 app.use((request, response, next) => {
