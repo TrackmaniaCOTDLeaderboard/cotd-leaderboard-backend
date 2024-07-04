@@ -57,13 +57,13 @@ $$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10
 
 ### Time Attack Leaderboard
 
-Es gibt zwei arten von Leaderboards welche im Spiel vorhanden sind. Ein seasonal Leaderboard, (wie zum Beispiel Campaigns) was sich nach dem Ablauf einer Season nicht mehr ändert und ein globales Leaderboard in dem die all time besten Zeiten gespeichert werden. Auch für die Strecke des Tages gibt es ein solches seasonal Leaderboard. Dieses wird für die Berechnung von unserem Leaderboard verwendet.
+There are two types of leaderboards in the game. A Seasonal Leaderboard (such as Campaigns), which does not change after the end of a season, and a Global Leaderboard, which stores all-time best times. There is also a seasonal leaderboard for the Track of the Days, which is used to calculate the Time Attack Leaderboard. The first 256 players of the ingame Seasonal Leaderboard will be considered in the Time Attack Leaderboard.
 
 $$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{256})}\right) $$
 
 ![Point Distribution Cups](images/points_distribution_comparison_Time%20Attack.jpg)
 
-Es gab Planungen ein weiteres Leaderboard für die all time besten Zeiten zu implementieren. Das ist jedoch mit einer großen Menge an Abfragen verbunden die an die Trackmania API von Nadeo gesendet werden müssen um die Ergebnisse zu aktualisieren. Daher wurde entschieden ein solches Leaderboard zunächst nicht zu implementieren. Sollte die Nachfrage jedoch hoch sein, kann diese Entscheidung auch zurückgenommen werden.
+There are plans to implement another leaderboard for all-time best times. However, this would require a large number of queries to be sent to Nadeo's Trackmania API to update the results. It has therefore been decided not to implement such a leaderboard for the time being. However, if there is a high demand, this decision can be reversed.
 
 ### Mapper Leaderboard
 
