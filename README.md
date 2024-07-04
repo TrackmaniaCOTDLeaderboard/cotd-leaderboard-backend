@@ -59,7 +59,7 @@ $$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10
 
 Es gibt zwei arten von Leaderboards welche im Spiel vorhanden sind. Ein seasonal Leaderboard, (wie zum Beispiel Campaigns) was sich nach dem Ablauf einer Season nicht mehr ändert und ein globales Leaderboard in dem die all time besten Zeiten gespeichert werden. Auch für die Strecke des Tages gibt es ein solches seasonal Leaderboard. Dieses wird für die Berechnung von unserem Leaderboard verwendet.
 
-\(\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{256})}\right) \)
+$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{256})}\right) $$
 
 ![Point Distribution Cups](images/points_distribution_comparison_Time%20Attack.jpg)
 
