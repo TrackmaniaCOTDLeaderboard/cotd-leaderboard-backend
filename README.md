@@ -30,11 +30,11 @@ The function for the positions in between is shown in the diagram below.
 
 #### Main Cup
 
-$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{640})}\right) $$
+$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log_{10}(position)}{\log_{10}(\text{640})}\right) $$
 
 #### Rerun Cup
 
-$$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{128})}\right) $$
+$$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log_{10}(position)}{\log_{10}(\text{128})}\right) $$
 
 ![Point Distribution Cups](images/points_distribution_comparison_Main%20Cup-Rerun%20Cup.jpg)
 
@@ -47,11 +47,11 @@ The function for the positions in between is shown in the diagram below.
 
 #### Main Challenge
 
-$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{640})}\right) $$
+$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log_{10}(position)}{\log_{10}(\text{640})}\right) $$
 
 #### Rerun Challenge
 
-$$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{128})}\right) $$
+$$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log_{10}(position)}{\log_{10}(\text{128})}\right) $$
 
 ![Point Distribution Cups](images/points_distribution_comparison_Main%20Challenge-Rerun%20Challenge.jpg)
 
@@ -59,7 +59,7 @@ $$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log*{10
 
 There are two types of leaderboards in the game. A Seasonal Leaderboard (such as Campaigns), which does not change after the end of a season, and a Global Leaderboard, which stores all-time best times. There is also a seasonal leaderboard for the Track of the Days, which is used to calculate the Time Attack Leaderboard. The first 256 players of the ingame Seasonal Leaderboard will be considered in the Time Attack Leaderboard.
 
-$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log*{10}(position)}{\log*{10}(\text{256})}\right) $$
+$$\text{points(position)} = 1 + (\text{1000} - 1) \times \left(1 - \frac{\log_{10}(position)}{\log_{10}(\text{256})}\right) $$
 
 ![Point Distribution Cups](images/points_distribution_comparison_Time%20Attack.jpg)
 
