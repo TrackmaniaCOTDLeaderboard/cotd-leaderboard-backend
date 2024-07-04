@@ -1,4 +1,4 @@
-import { getDateKey } from "./date";
+import { getDateKey } from "../../src/util/date";
 
 describe('getDateKey', () => {
     it('should return a formatted date string with leading zeros for single digit month and day', () => {

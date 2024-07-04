@@ -1,4 +1,4 @@
-import { calculateChunksDetails, chunkArray } from "./chunks";
+import { calculateChunksDetails, chunkArray } from "../../src/util/chunks";
 
 describe('chunkArray', () => {
     it('should split array into chunks of given size', () => {

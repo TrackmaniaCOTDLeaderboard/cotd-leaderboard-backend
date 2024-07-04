@@ -1,4 +1,4 @@
-import { getRecentKeys } from "./get-recent-keys";
+import { getRecentKeys } from "../../src/util/get-recent-keys";
 
 describe("getRecentKeys", () => {
     const sortedDays = {
