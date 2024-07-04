@@ -122,7 +122,7 @@ export const getMonthlyCupLeaderboard: RequestHandler = (request, response, next
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.query);
+    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.params);
     if (parsedParams.error) {
         return next(createHttpError(400, parsedParams.error.message));
     }
@@ -163,7 +163,7 @@ export const getMonthlyChallengeLeaderboard: RequestHandler = (request, response
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.query);
+    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.params);
     if (parsedParams.error) {
         return next(createHttpError(400, parsedParams.error.message));
     }
@@ -204,7 +204,7 @@ export const getMonthlyTimeAttackLeaderboard: RequestHandler = (request, respons
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.query);
+    const parsedParams = monthlyLeaderboardParamsSchema.validate(request.params);
     if (parsedParams.error) {
         return next(createHttpError(400, parsedParams.error.message));
     }
