@@ -6,3 +6,4 @@ export * as LeaderboardController from "./leaderboard";
 export * as ServiceController from "./services";
 export * as CotdController from "./cotd";
 export * as ChallengeController from "./challenge";
+export * as PlayerController from "./player";

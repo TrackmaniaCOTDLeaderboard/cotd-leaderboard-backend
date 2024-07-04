@@ -1,10 +1,9 @@
-import AdminRouter from "./admin";
-import TotdRouter from "./totd";
-import ImagesRouter from "./images";
-import AuthenticationRouter from "./authentication";
-import LeaderboardRouter from "./leaderboard";
-import ServiceRouter from "./services"
-import ChallengeRouter from "./challenge";
-import CotdRouter from "./cotd";
-
-export { AdminRouter, TotdRouter, ImagesRouter, AuthenticationRouter, LeaderboardRouter, ServiceRouter, CotdRouter, ChallengeRouter };
+export { default as AdminRouter } from "./admin";
+export { default as TotdRouter } from "./totd";
+export { default as ImagesRouter } from "./images";
+export { default as AuthenticationRouter } from "./authentication";
+export { default as LeaderboardRouter } from "./leaderboard";
+export { default as ServiceRouter } from "./services";
+export { default as ChallengeRouter } from "./challenge";
+export { default as CotdRouter } from "./cotd";
+export { default as PlayerRouter } from "./player";

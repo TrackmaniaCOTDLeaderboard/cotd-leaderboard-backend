@@ -1,4 +1,4 @@
-import { assignRanks } from "./calculate-leaderboard";
+import { assignRanks } from "../../src/util/calculate-leaderboard";
 
 describe("assignRanks function", () => {
     it("should correctly assign ranks to a sorted leaderboard", () => {

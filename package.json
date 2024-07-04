@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "dist/src/server.js",
   "scripts": {
+    "setup": "npm install && npx prisma db push && npx prisma db seed",
     "test": "jest",
     "dev": "nodemon src/server.ts",
     "build": "npx tsc",
@@ -44,8 +45,10 @@
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "express": "^4.19.2",
+    "express-joi-validation": "^5.0.1",
     "firebase-admin": "^12.2.0",
     "http-errors": "^2.0.0",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "prisma": "^5.16.1",
