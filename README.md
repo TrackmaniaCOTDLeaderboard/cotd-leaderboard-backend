@@ -41,7 +41,6 @@ $$\text{points(position)} = 1 + (\text{200} - 1) \times \left(1 - \frac{\log_{10
 ### Challenge Leaderboard
 
 As qualifying for the Cup of the Day (Challenge) and the Cup itself are closely linked, the leaderboards are structured in the same way. See [Cup Leaderboard](#cup-leaderboard).
-Unterteilt in das `globale` Leaderboard, so wie ein Leaderboard für jeden Monat. Diese Leaderboards können dann weiter unterschieden werden in das Leaderboard für den Main Cup (19:00 CET), sowie den Night rerun (03:00 CET) und den Morning rerun (11:00 CET).
 
 The function for the positions in between is shown in the diagram below.
 
@@ -81,8 +80,8 @@ All game APIs are to be used responsibly. Nadeo/Ubisoft can and will ban your ac
    3. Run `ptyhon ./scripty/extract_flags.py`
 
 3. Create a [dedicated server account](https://www.trackmania.com/?redirect=https://www.trackmania.com/player/dedicated-servers).
-4. Create an [Trackmania OAuth App](https://webservices.openplanet.dev/oauth/auth).
-5. Create a `.env` file.
+4. Create a [Trackmania OAuth App](https://webservices.openplanet.dev/oauth/auth).
+5. Create an `.env` file.
 
 | Key                              | Information                                                                                                                                                                                                                                                                                 |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
