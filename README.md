@@ -9,7 +9,7 @@ Run `extract_flags.py`
 
 # Point Distrubtion
 
-TODO siehe funtkion
+TODO siehe funktion
 TODO zeige bild
 TODO zeige tabelle
 TODO erkläre rerun (20%)
