@@ -71,7 +71,8 @@ export const getPlayersByName: RequestHandler = (request, response, next) => {
     const { name } = parsedQuery.value;
 
     database.player.findMany({
-        where: { name: { contains: name } }
+        where: { name: { contains: name } },
+        include: { zone: { select: { displayId: true } } }
     }).then(player => response.status(200).json(player)).catch(error => {
         console.error(error);
         next(createHttpError(500, `Failed to load player with name ${name}`))
