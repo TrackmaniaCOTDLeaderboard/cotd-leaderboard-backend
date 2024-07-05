@@ -4,13 +4,11 @@ import cors from "cors";
 import { AdminRouter, TotdRouter, PlayerRouter, ImagesRouter, AuthenticationRouter, LeaderboardRouter, ServiceRouter, ChallengeRouter, CotdRouter } from "./routes";
 import createHttpError, { isHttpError } from "http-errors";
 import { Log } from "./util";
-import morgan from "morgan";
 
 const app = express();
 
 app.use(cors());
 app.use(json());
-app.use(morgan("dev"));
 
 app.use("/admin", AdminRouter);
 app.use("/authentication", AuthenticationRouter);
