@@ -44,7 +44,7 @@ const getDisplayZone = (zone: TreeNode, nodeMap: Record<string, TreeNode>) => {
     }
 
     if (parents.length === 1 || parents.length === 2) {
-        return null; // World or continent
+        return parents[0]; // World or continent
     }
 
     return parents[parents.length - 3];

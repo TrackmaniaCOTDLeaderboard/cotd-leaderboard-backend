@@ -5,11 +5,13 @@ import { database } from "../database";
 
 const leaderboardVersionQuerySchema = Joi.object({
     version: Joi.number().integer().min(1).max(3).default(1),
-    name: Joi.string().min(3).optional()
+    name: Joi.string().min(3).optional(),
+    page: Joi.number().min(0).default(0)
 });
 
 const leaderboardQuerySchema = Joi.object({
-    name: Joi.string().min(3).optional()
+    name: Joi.string().min(3).optional(),
+    page: Joi.number().min(0).default(0)
 });
 
 
@@ -18,6 +20,8 @@ const monthlyLeaderboardParamsSchema = Joi.object({
     month: Joi.number().integer().min(1).max(12).required(),
 });
 
+const PAGE_SIZE = 100;
+
 export const getGlobalCupLeaderboard: RequestHandler = (request, response, next) => {
 
     const parsedQuery = leaderboardVersionQuerySchema.validate(request.query);
@@ -25,7 +29,7 @@ export const getGlobalCupLeaderboard: RequestHandler = (request, response, next)
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const { name, version } = parsedQuery.value;
+    const { name, version, page } = parsedQuery.value;
 
     database.globalCupLeaderboard.findMany({
         where: {
@@ -45,7 +49,9 @@ export const getGlobalCupLeaderboard: RequestHandler = (request, response, next)
         },
         orderBy: {
             position: "asc"
-        }
+        },
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
     }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
         console.error(error);
         next(createHttpError(500, "Failed to get global cup leaderboard."))
@@ -57,7 +63,7 @@ export const getGlobalTimeAttackLeaderboard: RequestHandler = (request, response
     if (parsedQuery.error) {
         return next(createHttpError(400, parsedQuery.error.message));
     }
-    const { name } = parsedQuery.value;
+    const { name, page } = parsedQuery.value;
 
     database.globalTimeAttackLeaderboard.findMany({
         where: {
@@ -76,7 +82,9 @@ export const getGlobalTimeAttackLeaderboard: RequestHandler = (request, response
         },
         orderBy: {
             position: "asc"
-        }
+        },
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
     }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
         console.error(error);
         next(createHttpError(500, "Failed to get global time attack leaderboard."))
@@ -89,7 +97,7 @@ export const getGlobalChallengeLeaderboard: RequestHandler = (request, response,
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const { name, version } = parsedQuery.value;
+    const { name, version, page } = parsedQuery.value;
 
     database.globalChallengeLeaderboard.findMany({
         where: {
@@ -109,7 +117,9 @@ export const getGlobalChallengeLeaderboard: RequestHandler = (request, response,
         },
         orderBy: {
             position: "asc"
-        }
+        },
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
     }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
         console.error(error)
         next(createHttpError(500, "Failed to get global challenge leaderboard."))
@@ -127,7 +137,7 @@ export const getMonthlyCupLeaderboard: RequestHandler = (request, response, next
         return next(createHttpError(400, parsedParams.error.message));
     }
 
-    const { name, version } = parsedQuery.value;
+    const { name, version, page } = parsedQuery.value;
     const { year, month } = parsedParams.value;
 
     database.monthlyCupLeaderboard.findMany({
@@ -150,7 +160,9 @@ export const getMonthlyCupLeaderboard: RequestHandler = (request, response, next
         },
         orderBy: {
             position: "asc"
-        }
+        },
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
     }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
         console.error(error)
         next(createHttpError(500, `Failed to get montlhy cup leaderboard of ${year}-${month}.`))
@@ -168,7 +180,7 @@ export const getMonthlyChallengeLeaderboard: RequestHandler = (request, response
         return next(createHttpError(400, parsedParams.error.message));
     }
 
-    const { name, version } = parsedQuery.value;
+    const { name, version, page } = parsedQuery.value;
     const { year, month } = parsedParams.value;
 
     database.monthlyChallengeLeaderboard.findMany({
@@ -191,7 +203,9 @@ export const getMonthlyChallengeLeaderboard: RequestHandler = (request, response
         },
         orderBy: {
             position: "asc"
-        }
+        },
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
     }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
         console.error(error);
         next(createHttpError(500, `Failed to get monthly challenge leaderboard of ${year}-${month}.`))
@@ -209,7 +223,7 @@ export const getMonthlyTimeAttackLeaderboard: RequestHandler = (request, respons
         return next(createHttpError(400, parsedParams.error.message));
     }
 
-    const { name } = parsedQuery.value;
+    const { name, page } = parsedQuery.value;
     const { year, month } = parsedParams.value;
 
     database.monthlyTimeAttackLeaderboard.findMany({
@@ -231,7 +245,9 @@ export const getMonthlyTimeAttackLeaderboard: RequestHandler = (request, respons
         },
         orderBy: {
             position: "asc"
-        }
+        },
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
     }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
         console.error(error);
         next(createHttpError(500, `Failed to get monthly time attack leaderboard of ${year}-${month}.`))
@@ -244,7 +260,7 @@ export const getMapperLeaderboard: RequestHandler = (request, response, next) =>
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const { name } = parsedQuery.value;
+    const { name, page } = parsedQuery.value;
 
     database.mapperLeaderboard.findMany({
         where: {
@@ -263,7 +279,9 @@ export const getMapperLeaderboard: RequestHandler = (request, response, next) =>
         },
         orderBy: {
             position: "asc"
-        }
+        },
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
     }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
         console.error(error)
         next(createHttpError(500, "Failed to get mapper leaderboard"))

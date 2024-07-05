@@ -37,8 +37,8 @@ model Player {
   timeAttack                   TimeAttack[]
   globalCupLeaderboard         GlobalCupLeaderboard[]
   monthlyCupLeaderboard        MonthlyCupLeaderboard[]
-  mapperLeaderboard            MapperLeaderboard[]
-  globalTimeAttackLeaderboard  GlobalTimeAttackLeaderboard[]
+  mapperLeaderboard            MapperLeaderboard?
+  globalTimeAttackLeaderboard  GlobalTimeAttackLeaderboard?
   monthlyTimeAttackLeaderboard MonthlyTimeAttackLeaderboard[]
   globalChallengeLeaderboard   GlobalChallengeLeaderboard[]
   monthlyChallengeLeaderboard  MonthlyChallengeLeaderboard[]

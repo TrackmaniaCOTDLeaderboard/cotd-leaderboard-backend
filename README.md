@@ -1,3 +1,5 @@
+![header](images/header.png)
+
 # Trackmania Cup of the Day Leaderboard
 
 **DISCLAIMER! This project is not related to Ubisoft Nadeo! It's a fan made project to generate and display a leaderboard for the Trackmania Cup of the Day.**

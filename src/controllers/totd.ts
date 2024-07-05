@@ -26,7 +26,11 @@ export const getTotdsByYearAndMonth: RequestHandler = (request, response, next) 
     const query = {
         where: { year, month },
         include: {
-            author: true,
+            author: {
+                include: {
+                    zone: true
+                }
+            },
         }
     };
 
@@ -55,18 +59,6 @@ export const getTotdsByYearMonthAndDay: RequestHandler = (request, response, nex
             author: {
                 include: {
                     zone: true
-                }
-            },
-            timeAttack: {
-                include: {
-                    player: {
-                        include: {
-                            zone: true
-                        }
-                    }
-                },
-                orderBy: {
-                    position: "asc"
                 }
             }
         }
