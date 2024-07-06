@@ -72,10 +72,24 @@ The mappers deserve some recognition too! There is now a leaderboard for the map
 
 ## Endpoints
 
+### Images
+
+- [Get Flag of Zone](docs/images/flag.md)
+
 ### Leaderboard
 
 - [Global Cup Leaderboard](docs/leaderboard/global-cup-leaderboard.md)
 - [Monthly Cup Leaderboard](docs/leaderboard/monthly-cup-leaderboard.md)
+- [Global Challenge Leaderboard](docs/leaderboard/global-challenge-leaderboard.md)
+- [Monthly Challenge Leaderboard](docs/leaderboard/monthly-challenge-leaderboard.md)
+- [Global Time Attack Leaderboard](docs/leaderboard/global-time-attack-leaderboard.md)
+- [Monthly Time Attack Leaderboard](docs/leaderboard/monthly-time-attack-leaderboard.md)
+- [Mapper Leaderboard](docs/leaderboard/mapper-leaderboard.md)
+
+### Track of the Day
+
+- [Get Track of the Day](docs/images/totd.md)
+- [Get Tracks of Month](docs/images/totds-month.md)
 
 ## Getting Started
 
