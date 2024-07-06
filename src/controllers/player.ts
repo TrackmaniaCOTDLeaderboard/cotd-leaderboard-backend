@@ -1,7 +1,8 @@
 import { RequestHandler } from "express";
-import { database } from "../database";
-import Joi from "joi";
 import createHttpError from "http-errors";
+import Joi from "joi";
+import { database } from "../database";
+import { playerQuery, statisticsQuery } from "../util/queries";
 
 const playerIdParamsSchema = Joi.object({
     id: Joi.string().required(),
@@ -18,10 +19,19 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
 
     database.player.findUnique({
         where: { id },
-        include: {
-            zone: true,
-            mapperLeaderboard: true,
+        select: {
+            ...playerQuery,
+            mapperLeaderboard: {
+                select: {
+                    points: true,
+                    position: true
+                }
+            },
             monthlyCupLeaderboard: {
+                select: {
+                    ...statisticsQuery,
+                    version: true
+                },
                 orderBy: [
                     { year: "asc" },
                     { month: "asc" },
@@ -29,6 +39,10 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
                 ]
             },
             monthlyChallengeLeaderboard: {
+                select: {
+                    ...statisticsQuery,
+                    version: true
+                },
                 orderBy: [
                     { year: "asc" },
                     { month: "asc" },
@@ -36,18 +50,29 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
                 ]
             },
             monthlyTimeAttackLeaderboard: {
+                select: statisticsQuery,
                 orderBy: [
                     { year: "asc" },
                     { month: "asc" }
                 ]
             },
             globalChallengeLeaderboard: {
+                select: {
+                    ...statisticsQuery,
+                    version: true
+                },
                 orderBy: { version: "asc" }
             },
             globalCupLeaderboard: {
+                select: {
+                    ...statisticsQuery,
+                    version: true
+                },
                 orderBy: { version: "asc" }
             },
-            globalTimeAttackLeaderboard: true,
+            globalTimeAttackLeaderboard: {
+                select: statisticsQuery
+            },
         }
     }).then(player => response.status(200).json(player)).catch(error => {
         console.error(error);
