@@ -70,6 +70,13 @@ There are plans to implement another leaderboard for all-time best times. Howeve
 
 The mappers deserve some recognition too! There is now a leaderboard for the mappers with the most Track of the Days. One point is awarded per track.
 
+## Endpoints
+
+### Leaderboard
+
+- [Global Cup Leaderboard](docs/leaderboard/global-cup-leaderboard.md)
+- [Monthly Cup Leaderboard](docs/leaderboard/monthly-cup-leaderboard.md)
+
 ## Getting Started
 
 All game APIs are to be used responsibly. Nadeo/Ubisoft can and will ban your accounts/IPs if they detect any disruptive (sending too many requests too fast) or any other malicious behavior.

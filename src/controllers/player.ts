@@ -30,7 +30,9 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
             monthlyCupLeaderboard: {
                 select: {
                     ...statisticsQuery,
-                    version: true
+                    version: true,
+                    month: true,
+                    year: true
                 },
                 orderBy: [
                     { year: "asc" },
@@ -41,7 +43,9 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
             monthlyChallengeLeaderboard: {
                 select: {
                     ...statisticsQuery,
-                    version: true
+                    version: true,
+                    month: true,
+                    year: true
                 },
                 orderBy: [
                     { year: "asc" },
@@ -50,7 +54,11 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
                 ]
             },
             monthlyTimeAttackLeaderboard: {
-                select: statisticsQuery,
+                select: {
+                    ...statisticsQuery,
+                    month: true,
+                    year: true
+                },
                 orderBy: [
                     { year: "asc" },
                     { month: "asc" }
