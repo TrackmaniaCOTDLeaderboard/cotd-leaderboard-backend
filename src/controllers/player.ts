@@ -90,9 +90,11 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
 
 
 const playerNameQuerySchema = Joi.object({
-    name: Joi.string().min(3).optional()
+    name: Joi.string().min(3).optional(),
+    page: Joi.number().min(0).default(0)
 });
 
+const PAGE_SIZE = 100;
 
 export const getPlayersByName: RequestHandler = (request, response, next) => {
     const parsedQuery = playerNameQuerySchema.validate(request.query);
@@ -101,11 +103,13 @@ export const getPlayersByName: RequestHandler = (request, response, next) => {
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const { name } = parsedQuery.value;
+    const { name, page } = parsedQuery.value;
 
     database.player.findMany({
         where: { name: { contains: name } },
-        include: { zone: { select: { displayId: true } } }
+        include: { zone: { select: { displayId: true } } },
+        take: PAGE_SIZE,
+        skip: page * PAGE_SIZE
     }).then(player => response.status(200).json(player)).catch(error => {
         console.error(error);
         next(createHttpError(500, `Failed to load player with name ${name}`))
