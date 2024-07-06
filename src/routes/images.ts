@@ -1,8 +1,8 @@
 import express from "express";
-import { ImagesController } from "../controllers";
+import { ImageController } from "../controllers";
 
 const router = express.Router();
 
-router.get("/flag/:zoneId", ImagesController.getFlag);
+router.get("/flag/:zoneId", ImageController.getFlag);
 
 export default router;

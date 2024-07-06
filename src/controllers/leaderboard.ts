@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import Joi from "joi";
 import { database } from "../database";
+import { leaderboardQuery, playerQuery } from "../util/queries";
 
 const leaderboardVersionQuerySchema = Joi.object({
     version: Joi.number().integer().min(1).max(3).default(1),
@@ -40,13 +41,7 @@ export const getGlobalCupLeaderboard: RequestHandler = (request, response, next)
             },
             version
         },
-        include: {
-            player: {
-                include: {
-                    zone: true
-                }
-            }
-        },
+        select: leaderboardQuery,
         orderBy: {
             position: "asc"
         },
@@ -73,13 +68,7 @@ export const getGlobalTimeAttackLeaderboard: RequestHandler = (request, response
                 }
             },
         },
-        include: {
-            player: {
-                include: {
-                    zone: true
-                }
-            }
-        },
+        select: leaderboardQuery,
         orderBy: {
             position: "asc"
         },
@@ -108,13 +97,7 @@ export const getGlobalChallengeLeaderboard: RequestHandler = (request, response,
             },
             version
         },
-        include: {
-            player: {
-                include: {
-                    zone: true
-                }
-            }
-        },
+        select: leaderboardQuery,
         orderBy: {
             position: "asc"
         },
@@ -151,13 +134,7 @@ export const getMonthlyCupLeaderboard: RequestHandler = (request, response, next
             year,
             month
         },
-        include: {
-            player: {
-                include: {
-                    zone: true
-                }
-            }
-        },
+        select: leaderboardQuery,
         orderBy: {
             position: "asc"
         },
@@ -194,13 +171,7 @@ export const getMonthlyChallengeLeaderboard: RequestHandler = (request, response
             year,
             month
         },
-        include: {
-            player: {
-                include: {
-                    zone: true
-                }
-            }
-        },
+        select: leaderboardQuery,
         orderBy: {
             position: "asc"
         },
@@ -236,13 +207,7 @@ export const getMonthlyTimeAttackLeaderboard: RequestHandler = (request, respons
             year,
             month
         },
-        include: {
-            player: {
-                include: {
-                    zone: true
-                }
-            }
-        },
+        select: leaderboardQuery,
         orderBy: {
             position: "asc"
         },
@@ -270,11 +235,11 @@ export const getMapperLeaderboard: RequestHandler = (request, response, next) =>
                 }
             }
         },
-        include: {
+        select: {
+            points: true,
+            position: true,
             player: {
-                include: {
-                    zone: true
-                }
+                select: playerQuery
             }
         },
         orderBy: {

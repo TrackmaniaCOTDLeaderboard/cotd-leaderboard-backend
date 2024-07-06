@@ -1,7 +1,8 @@
 import { RequestHandler } from "express";
-import { database } from "../database";
 import createHttpError from "http-errors";
 import Joi from "joi";
+import { database } from "../database";
+import { mapQuery } from "../util/queries";
 
 const totdDayParameterSchema = Joi.object({
     year: Joi.number().integer().min(2020).required(),
@@ -25,13 +26,7 @@ export const getTotdsByYearAndMonth: RequestHandler = (request, response, next) 
 
     const query = {
         where: { year, month },
-        include: {
-            author: {
-                include: {
-                    zone: true
-                }
-            },
-        }
+        select: mapQuery
     };
 
     database.map.findMany(query)
@@ -55,13 +50,7 @@ export const getTotdsByYearMonthAndDay: RequestHandler = (request, response, nex
         where: {
             year_month_day: { year, month, day }
         },
-        include: {
-            author: {
-                include: {
-                    zone: true
-                }
-            }
-        }
+        select: mapQuery
     }).then(map => response.status(200).json(map)).catch(error => {
         console.error(error);
         next(createHttpError(500, `Failed to get track of the day ${year}-${month}-${day}`))

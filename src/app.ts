@@ -1,8 +1,8 @@
-import "dotenv/config";
-import express, { json, Request, Response, NextFunction } from "express";
 import cors from "cors";
-import { AdminRouter, TotdRouter, PlayerRouter, ImagesRouter, AuthenticationRouter, LeaderboardRouter, ServiceRouter, ChallengeRouter, CotdRouter } from "./routes";
+import "dotenv/config";
+import express, { json, NextFunction, Request, Response } from "express";
 import createHttpError, { isHttpError } from "http-errors";
+import { AdminRouter, AuthenticationRouter, ImagesRouter, LeaderboardRouter, PlayerRouter, ResultsRouter, ServiceRouter, TotdRouter } from "./routes";
 import { Log } from "./util";
 
 const app = express();
@@ -13,12 +13,11 @@ app.use(json());
 app.use("/admin", AdminRouter);
 app.use("/authentication", AuthenticationRouter);
 app.use("/totd", TotdRouter);
-app.use("/cotd", CotdRouter);
-app.use("/challenge", ChallengeRouter);
 app.use("/img", ImagesRouter);
 app.use("/leaderboard", LeaderboardRouter);
 app.use("/service", ServiceRouter);
 app.use("/player", PlayerRouter);
+app.use("/results", ResultsRouter);
 
 // Handling of unknown endpoints
 app.use((request, response, next) => {
