@@ -3,14 +3,22 @@
 Search Player by name.
 
 ```http
-GET https://api.cotd-leaderboard.com/player/id/
+GET https://api.cotd-leaderboard.com/player/id/{id}
 ```
+
+#### Path Parameter
+
+| Key    | Type     | Description         |
+| ------ | -------- | ------------------- |
+| `{id}` | `string` | `id` of the Player. |
 
 #### Examples
 
 [Get Player Details of Player with id 05477e79-25fd-48c2-84c7-e1621aa46517](https://api.cotd-leaderboard.com/player/id/05477e79-25fd-48c2-84c7-e1621aa46517)
 
 #### Response
+
+`null` if no Player with the `id` exists.
 
 ```json
 {
