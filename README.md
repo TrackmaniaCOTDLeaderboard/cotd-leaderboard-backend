@@ -88,8 +88,13 @@ The mappers deserve some recognition too! There is now a leaderboard for the map
 
 ### Track of the Day
 
-- [Get Track of the Day](docs/images/totd.md)
-- [Get Tracks of Month](docs/images/totds-month.md)
+- [Get Track of the Day](docs/totd/totd.md)
+- [Get Tracks of Month](docs/totd/totds-month.md)
+
+### Player
+
+- [Search Player](docs/player/search-player.md)
+- [Player Details](docs/player/player-details.md)
 
 ## Getting Started
 
@@ -122,7 +127,7 @@ All game APIs are to be used responsibly. Nadeo/Ubisoft can and will ban your ac
 
 ### Docker
 
-The project is also available as [Docker Image](https://hub.docker.com/r/sowiemarkus/cotd-leaderboard) verfügbar.
+The project is also available as [Docker Image](https://hub.docker.com/r/sowiemarkus/cotd-leaderboard).
 
 `docker pull sowiemarkus/cotd-leaderboard:latest`
 
