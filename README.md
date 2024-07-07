@@ -86,6 +86,16 @@ The mappers deserve some recognition too! There is now a leaderboard for the map
 - [Monthly Time Attack Leaderboard](docs/leaderboard/monthly-time-attack-leaderboard.md)
 - [Mapper Leaderboard](docs/leaderboard/mapper-leaderboard.md)
 
+### Results
+
+- [Cup Results](docs/results/cup-results.md)
+- [Challenge Results](docs/results/challenge-results.md)
+- [Time Attack Results](docs/results/time-attack-results.md)
+
+- [Cup Results of Player](docs/results/cup-results-player.md)
+- [Challenge Results of Player](docs/results/challenge-results-player.md)
+- [Time Attack Results of Player](docs/results/time-attack-results-player.md)
+
 ### Track of the Day
 
 - [Get Track of the Day](docs/totd/totd.md)
@@ -95,6 +105,7 @@ The mappers deserve some recognition too! There is now a leaderboard for the map
 
 - [Search Player](docs/player/search-player.md)
 - [Player Details](docs/player/player-details.md)
+- [Maps of Player](docs/player/maps-of-player.md)
 
 ## Getting Started
 

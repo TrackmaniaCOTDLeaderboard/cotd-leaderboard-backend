@@ -18,7 +18,7 @@ GET https://api.cotd-leaderboard.com/leaderboard/cup/monthly/{year}/{month}?page
 | Key         | Type     | Required | Default | Description                                                                                                  |
 | ----------- | -------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------ |
 | `{page}`    | `number` | ❌       | `0`     | Page Size: `100`. See [Examples](#examples).                                                                 |
-| `{version}` | `number` | ✔        | -       | `1` for Main Cup (19:00 CET)<br>`2` for Night Rerun (03:00 CET)<br>`3` for Morning Rerun (11:00 CET)         |
+| `{version}` | `number` | ✔        | `1`     | `1` for Main Cup (19:00 CET)<br>`2` for Night Rerun (03:00 CET)<br>`3` for Morning Rerun (11:00 CET)         |
 | `{name}`    | `string` | ❌       | -       | Set this to filter the response after names. The min length of the string is `3`. See [Examples](#examples). |
 
 #### Examples
