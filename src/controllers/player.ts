@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import Joi from "joi";
 import { database } from "../database";
-import { playerQuery, statisticsQuery } from "../util/queries";
+import { mapQuery, playerQuery, statisticsQuery } from "../util/queries";
 
 const playerIdParamsSchema = Joi.object({
     id: Joi.string().required(),
@@ -30,7 +30,9 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
             monthlyCupLeaderboard: {
                 select: {
                     ...statisticsQuery,
-                    version: true
+                    version: true,
+                    month: true,
+                    year: true
                 },
                 orderBy: [
                     { year: "asc" },
@@ -41,7 +43,9 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
             monthlyChallengeLeaderboard: {
                 select: {
                     ...statisticsQuery,
-                    version: true
+                    version: true,
+                    month: true,
+                    year: true
                 },
                 orderBy: [
                     { year: "asc" },
@@ -50,7 +54,11 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
                 ]
             },
             monthlyTimeAttackLeaderboard: {
-                select: statisticsQuery,
+                select: {
+                    ...statisticsQuery,
+                    month: true,
+                    year: true
+                },
                 orderBy: [
                     { year: "asc" },
                     { month: "asc" }
@@ -80,11 +88,38 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
     });
 }
 
+export const getMapsOfPlayer: RequestHandler = (request, response, next) => {
+    const parsedParams = playerIdParamsSchema.validate(request.params);
+
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
+    }
+
+    const { id } = parsedParams.value;
+
+    database.map.findMany({
+        where: { playerId: id },
+        select: {
+            ...mapQuery
+        },
+        orderBy: [
+            { year: "desc" },
+            { month: "desc" },
+            { day: "desc" },
+        ]
+    }).then(player => response.status(200).json(player)).catch(error => {
+        console.error(error);
+        next(createHttpError(500, `Failed to load player with id ${id}`))
+    });
+}
+
 
 const playerNameQuerySchema = Joi.object({
-    name: Joi.string().min(3).optional()
+    name: Joi.string().min(3).optional(),
+    page: Joi.number().min(0).default(0)
 });
 
+const PAGE_SIZE = 100;
 
 export const getPlayersByName: RequestHandler = (request, response, next) => {
     const parsedQuery = playerNameQuerySchema.validate(request.query);
@@ -93,11 +128,13 @@ export const getPlayersByName: RequestHandler = (request, response, next) => {
         return next(createHttpError(400, parsedQuery.error.message));
     }
 
-    const { name } = parsedQuery.value;
+    const { name, page } = parsedQuery.value;
 
     database.player.findMany({
         where: { name: { contains: name } },
-        include: { zone: { select: { displayId: true } } }
+        include: { zone: { select: { displayId: true } } },
+        take: PAGE_SIZE,
+        skip: page * PAGE_SIZE
     }).then(player => response.status(200).json(player)).catch(error => {
         console.error(error);
         next(createHttpError(500, `Failed to load player with name ${name}`))

@@ -40,7 +40,7 @@ export const getTotDStatus: RequestHandler = async (request, response, next) => 
         const dateSet = new Set(maps.map(map => getDateKey(map.year, map.month, map.day)));
 
         for (let d = new Date(FIRST_TOTD); d <= today; d.setDate(d.getDate() + 1)) {
-            const challenge = getDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+            const challenge = getDateKey(d.getFullYear(), d.getMonth() + 1, d.getDate());
             record[challenge] = dateSet.has(challenge);
         }
 

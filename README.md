@@ -70,6 +70,43 @@ There are plans to implement another leaderboard for all-time best times. Howeve
 
 The mappers deserve some recognition too! There is now a leaderboard for the mappers with the most Track of the Days. One point is awarded per track.
 
+## Endpoints
+
+### Images
+
+- [Get Flag of Zone](docs/images/flag.md)
+
+### Leaderboard
+
+- [Global Cup Leaderboard](docs/leaderboard/global-cup-leaderboard.md)
+- [Monthly Cup Leaderboard](docs/leaderboard/monthly-cup-leaderboard.md)
+- [Global Challenge Leaderboard](docs/leaderboard/global-challenge-leaderboard.md)
+- [Monthly Challenge Leaderboard](docs/leaderboard/monthly-challenge-leaderboard.md)
+- [Global Time Attack Leaderboard](docs/leaderboard/global-time-attack-leaderboard.md)
+- [Monthly Time Attack Leaderboard](docs/leaderboard/monthly-time-attack-leaderboard.md)
+- [Mapper Leaderboard](docs/leaderboard/mapper-leaderboard.md)
+
+### Results
+
+- [Cup Results](docs/results/cup-results.md)
+- [Challenge Results](docs/results/challenge-results.md)
+- [Time Attack Results](docs/results/time-attack-results.md)
+
+- [Cup Results of Player](docs/results/cup-results-player.md)
+- [Challenge Results of Player](docs/results/challenge-results-player.md)
+- [Time Attack Results of Player](docs/results/time-attack-results-player.md)
+
+### Track of the Day
+
+- [Get Track of the Day](docs/totd/totd.md)
+- [Get Tracks of Month](docs/totd/totds-month.md)
+
+### Player
+
+- [Search Player](docs/player/search-player.md)
+- [Player Details](docs/player/player-details.md)
+- [Maps of Player](docs/player/maps-of-player.md)
+
 ## Getting Started
 
 All game APIs are to be used responsibly. Nadeo/Ubisoft can and will ban your accounts/IPs if they detect any disruptive (sending too many requests too fast) or any other malicious behavior.
@@ -101,7 +138,7 @@ All game APIs are to be used responsibly. Nadeo/Ubisoft can and will ban your ac
 
 ### Docker
 
-The project is also available as [Docker Image](https://hub.docker.com/r/sowiemarkus/cotd-leaderboard) verfügbar.
+The project is also available as [Docker Image](https://hub.docker.com/r/sowiemarkus/cotd-leaderboard).
 
 `docker pull sowiemarkus/cotd-leaderboard:latest`
 

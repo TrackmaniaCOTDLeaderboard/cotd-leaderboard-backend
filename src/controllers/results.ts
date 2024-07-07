@@ -141,3 +141,145 @@ export const getTimeAttackResults: RequestHandler = (request, response, next) =>
         next(createHttpError(500, `Failed to get time attack results of ${year}-${month}-${day}.`))
     });
 }
+
+
+const resultsVersionPlayerQuerySchema = Joi.object({
+    page: Joi.number().min(0).default(0),
+    version: Joi.number().integer().min(1).max(3).default(1)
+});
+
+const resultsPlayerQuerySchema = Joi.object({
+    page: Joi.number().min(0).default(0)
+});
+
+const resultsPlayerParamsSchema = Joi.object({
+    id: Joi.string().required()
+});
+
+export const getCupResultsOfPlayer: RequestHandler = (request, response, next) => {
+    const parsedQuery = resultsVersionPlayerQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
+    }
+
+    const parsedParams = resultsPlayerParamsSchema.validate(request.params);
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
+    }
+
+    const { version, page } = parsedQuery.value;
+    const { id } = parsedParams.value;
+
+    database.cupResult.findMany({
+        where: {
+            player: { id },
+            cup: { version }
+        },
+        select: {
+            ...resultQuery,
+            cup: {
+                select: {
+                    year: true,
+                    month: true,
+                    day: true,
+                    version: true
+                }
+            }
+        },
+        orderBy: [
+            { cup: { year: "desc" } },
+            { cup: { month: "desc" } },
+            { cup: { day: "desc" } },
+        ],
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error)
+        next(createHttpError(500, `Failed to get cup results of ${id} #${version}.`))
+    });
+}
+
+export const getChallengeResultsOfPlayer: RequestHandler = (request, response, next) => {
+    const parsedQuery = resultsVersionPlayerQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
+    }
+
+    const parsedParams = resultsPlayerParamsSchema.validate(request.params);
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
+    }
+
+    const { version, page } = parsedQuery.value;
+    const { id } = parsedParams.value;
+
+    database.challengeResult.findMany({
+        where: {
+            player: { id },
+            challenge: { version }
+        },
+        select: {
+            ...resultQuery,
+            challenge: {
+                select: {
+                    year: true,
+                    month: true,
+                    day: true,
+                    version: true
+                }
+            }
+        },
+        orderBy: [
+            { challenge: { year: "desc" } },
+            { challenge: { month: "desc" } },
+            { challenge: { day: "desc" } },
+        ],
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error)
+        next(createHttpError(500, `Failed to get challenge results of ${id} #${version}.`))
+    });
+}
+
+export const getTimeAttackResultsOfPlayer: RequestHandler = (request, response, next) => {
+    const parsedQuery = resultsPlayerQuerySchema.validate(request.query);
+    if (parsedQuery.error) {
+        return next(createHttpError(400, parsedQuery.error.message));
+    }
+
+    const parsedParams = resultsPlayerParamsSchema.validate(request.params);
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
+    }
+
+    const { page } = parsedQuery.value;
+    const { id } = parsedParams.value;
+
+    database.timeAttack.findMany({
+        where: {
+            player: { id },
+        },
+        select: {
+            ...resultQuery,
+            map: {
+                select: {
+                    year: true,
+                    month: true,
+                    day: true,
+                }
+            }
+        },
+        orderBy: [
+            { map: { year: "desc" } },
+            { map: { month: "desc" } },
+            { map: { day: "desc" } },
+        ],
+        skip: page * PAGE_SIZE,
+        take: PAGE_SIZE
+    }).then(leaderboard => response.status(200).json(leaderboard)).catch(error => {
+        console.error(error)
+        next(createHttpError(500, `Failed to get time attack results of ${id}.`))
+    });
+}
+
