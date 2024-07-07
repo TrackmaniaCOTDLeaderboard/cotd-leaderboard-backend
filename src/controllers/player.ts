@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import Joi from "joi";
 import { database } from "../database";
-import { playerQuery, statisticsQuery } from "../util/queries";
+import { mapQuery, playerQuery, statisticsQuery } from "../util/queries";
 
 const playerIdParamsSchema = Joi.object({
     id: Joi.string().required(),
@@ -82,6 +82,31 @@ export const getPlayerById: RequestHandler = (request, response, next) => {
                 select: statisticsQuery
             },
         }
+    }).then(player => response.status(200).json(player)).catch(error => {
+        console.error(error);
+        next(createHttpError(500, `Failed to load player with id ${id}`))
+    });
+}
+
+export const getMapsOfPlayer: RequestHandler = (request, response, next) => {
+    const parsedParams = playerIdParamsSchema.validate(request.params);
+
+    if (parsedParams.error) {
+        return next(createHttpError(400, parsedParams.error.message));
+    }
+
+    const { id } = parsedParams.value;
+
+    database.map.findMany({
+        where: { playerId: id },
+        select: {
+            ...mapQuery
+        },
+        orderBy: [
+            { year: "desc" },
+            { month: "desc" },
+            { day: "desc" },
+        ]
     }).then(player => response.status(200).json(player)).catch(error => {
         console.error(error);
         next(createHttpError(500, `Failed to load player with id ${id}`))
