@@ -91,7 +91,6 @@ The mappers deserve some recognition too! There is now a leaderboard for the map
 - [Cup Results](docs/results/cup-results.md)
 - [Challenge Results](docs/results/challenge-results.md)
 - [Time Attack Results](docs/results/time-attack-results.md)
-
 - [Cup Results of Player](docs/results/cup-results-player.md)
 - [Challenge Results of Player](docs/results/challenge-results-player.md)
 - [Time Attack Results of Player](docs/results/time-attack-results-player.md)
