@@ -1,13 +1,13 @@
 {
   "name": "cotd-leaderboard-backend",
   "version": "1.0.0",
-  "main": "dist/src/server.js",
+  "main": "dist/server.js",
   "scripts": {
     "setup": "npm install && npx prisma db push && npx prisma db seed",
     "test": "jest",
     "dev": "nodemon src/server.ts",
     "build": "npx tsc",
-    "start": "node dist/src/server.js"
+    "start": "node dist/server.js"
   },
   "jest": {
     "preset": "ts-jest",
